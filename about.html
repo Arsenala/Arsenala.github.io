@@ -1,0 +1,152 @@
+---
+layout: page
+title: "About"
+description: "keep hungry keep foolish"
+header-img: "img/about-bg.jpg"
+---
+
+<!-- Language Selector -->
+<select class="sel-lang" onchange= "onLanChange(this.options[this.options.selectedIndex].value)">
+    <option value="0" selected> 中文 Chinese </option>
+    <option value="1"> 英文 English </option>
+</select>
+
+<!-- Chinese Version -->
+<div class="zh post-container">
+
+    <!--copied from markdown -->
+    <blockquote><p>写写代码，做做设计，<br>
+    离开世界之前，一切都是经历</p></blockquote>
+
+    <p>Hey，我是<strong>小超</strong>，程序员 &amp; 设计师<br>
+        具有较强的团队意识和组织能力，对工作认真负责，有较强的抗压能力<br>
+        勤奋好学，积极进取，学习能力强，并且勇于迎接新的挑战<br>
+        具有良好的语言沟通能力，及较强的适应能力<br>
+        喜欢跑步,喜欢骑行,梦想可以去骑行西藏一次<br>
+        幽默活泼但不失稳重，为人友善，乐于助人<br>
+        对设计感兴趣，有较强的灵感<br>
+    </p>
+    <p>音乐重度依赖患者，设计师强迫症患者，书买得比看得多患者，毒舌患者，科技产品发布会观看癖患者，间歇性感伤患者，习惯性熬夜患者</p>
+
+</div>
+
+<!-- English Version -->
+<div class="en post-container">
+    <blockquote><p>Write code, do design, <br>
+        Before I leave the world, everything is experience</p></blockquote>
+
+    <p>Hey, I am<strong>xiaochao</strong>，an engineer &amp; a designer, <br>
+        With strong team consciousness and ability of organization, the work of conscientious and responsible, have strong ability to work under pressure<br>
+        Studious, positive enterprising, strong learning ability, and have the courage to meet new challenges<br>
+        Good language communication ability, and strong ability to adapt<br>
+        Like running, cycling, the dream can go cycling in Tibet<br>
+        Humor lively but yet prudent, be friendly and helpful<br>
+        Interested in design, has the strong inspiration<br>
+    </p>
+    <p>Music heavy dependence on patients, stylist ocd patients, buy books much better than watching patients, patients with tongue, science and technology product launches the addiction patients, intermittent sad patients, patients with habit to stay up late.</p>
+
+
+</div>
+
+<!-- Handle Language Change -->
+<script type="text/javascript">
+    // get nodes
+    var $zh = document.querySelector(".zh");
+    var $en = document.querySelector(".en");
+    var $select = document.querySelector("select");
+
+    // bind hashchange event
+    window.addEventListener('hashchange', _render);
+
+    // handle render
+    function _render(){
+        var _hash = window.location.hash;
+        // en
+        if(_hash == "#en"){
+            $select.selectedIndex = 1;
+            $en.style.display = "block";
+            $zh.style.display = "none";
+        // zh by default
+        }else{
+            // not trigger onChange, otherwise cause a loop call.
+            $select.selectedIndex = 0;
+            $zh.style.display = "block";
+            $en.style.display = "none";
+        }
+    }
+
+    // handle select change
+    function onLanChange(index){
+        if(index == 0){
+            window.location.hash = "#zh"
+        }else{
+            window.location.hash = "#en"
+        }
+    }
+
+    // init
+    _render();
+</script>
+
+
+
+{% if site.duoshuo_username %}
+<!-- 多说评论框 start -->
+<div class="comment">
+    <!-- This id is used for indexing my loss comments forcedly -->
+    <div class="ds-thread"
+    {% if site.duoshuo_username == "jiaxuchao" %}
+    {% else %}
+    <!-- U can just use this key generated to index comments at page about -->
+        data-thread-key="{{site.duoshuo_username}}/about"
+    {% endif %}
+
+    data-title="{{page.title}}"
+    data-url="{{site.url}}/about/"></div>
+</div>
+<!-- 多说评论框 end -->
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User hacking by Hux
+    var _user = '{{site.duoshuo_username}}';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+{% endif %}
+
+
+{% if site.disqus_username %}
+<!-- disqus 评论框 start -->
+<div class="comment">
+    <div id="disqus_thread" class="disqus-thread">
+
+    </div>
+</div>
+<!-- disqus 评论框 end -->
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "{{site.disqus_username}}";
+    var disqus_identifier = "{{site.disqus_username}}/{{page.url}}";
+    var disqus_url = "{{site.url}}{{page.url}}";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+{% endif %}
