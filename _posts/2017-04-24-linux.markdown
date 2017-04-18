@@ -74,13 +74,13 @@ ss(Socket Statistics的缩写)命令可以用来获取 socket统计信息，此�
 
 -A, --query=QUERY, --socket=QUERY
 
-      QUERY := {all|inet|tcp|udp|raw|unix|packet|netlink}[,QUERY]
+QUERY := {all/inet/tcp/udp/raw/unix/packet/netlink}[,QUERY]
 
 -D, --diag=FILE     将原始TCP套接字（sockets）信息转储到文件
 
- -F, --filter=FILE   从文件中都去过滤器信息
+-F, --filter=FILE   从文件中都去过滤器信息
 
-       FILTER := [ state TCP-STATE ] [ EXPRESSION ]
+FILTER := [ state TCP-STATE ] [ EXPRESSION ]
 
 ### 4．常用范例：
 
@@ -250,9 +250,9 @@ ss -o state fin-wait-1 ‘( sport = :http or sport = :https )’ dst 193.233.7/2
 
 **命令**：
 
-    ss -4 state FILTER-NAME-HERE
+ss -4 state FILTER-NAME-HERE
 
-    ss -6 state FILTER-NAME-HERE
+ss -6 state FILTER-NAME-HERE
 
 **输出**：
 
