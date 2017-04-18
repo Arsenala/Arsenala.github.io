@@ -461,7 +461,8 @@ wget --ftp-user=USERNAME --ftp-password=PASSWORD url
 
     # make install
     
-参考资料：
+参考资料：http://www.cnblogs.com/peida/archive/2013/03/18/2965369.html
+
 
 
 
