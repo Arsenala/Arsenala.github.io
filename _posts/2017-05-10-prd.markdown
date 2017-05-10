@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "产品需求文档（PRD）的撰写方法"
-subtitle:   "prd"
+subtitle:   prd
 date:       2017-05-10 00:00:00
 author:     "xiaochao"
 header-img: "img/post-bg-Product.jpg"
