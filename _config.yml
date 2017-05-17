@@ -90,13 +90,13 @@ service-worker: true
 # Friends
 friends: [
     {
-        title: "席景楠",
+        title: "小楠",
         href: "http://xijingnan.com"
     },
-    {
-        title: "ASM100",
-        href: "http://www.asm100.com"
-    }
+#    {
+#        title: "ASM100",
+#        href: "http://www.asm100.com"
+#    }
     ]
     #{
 #        title: "乱序",
