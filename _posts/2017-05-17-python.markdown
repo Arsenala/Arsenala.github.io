@@ -9,8 +9,8 @@ header-mask: 0.3
 catalog:    true
 tags:
     - Python
-    - Python入门
-    - Python教程
+    - Python 入门
+    - Python 教程
 ---
 
 # 第 1 章 引论
