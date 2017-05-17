@@ -10,7 +10,7 @@ catalog:    true
 tags:
     - Python
     - Python 入门
-    - PRD
+    - Python 教程
 ---
 
 # 第 1 章 引论
