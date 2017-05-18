@@ -1,0 +1,866 @@
+---
+layout:     post
+title:      "改善 Python 程序的 91 个建议（三）"
+subtitle:   "Python"
+date:       2017-05-19 00:00:00
+author:     "yufengzhe"
+header-img: "img/post-bg-python.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - Python
+    - Python 入门
+    - Python 教程
+---
+
+# 第 4 章 库
+
+### 建议 41：使用 argparse 处理命令行参数
+
+Python 标准库中有几种关于处理命令行的方案：getopt、optparse、argparse。
+
+现阶段最好用的参数处理是argparse：
+
+    import argparse
+    parse = argparse.ArgumentParser()
+    parse.add_argument('-o', '--output')
+    parse.add_argument('-v', dest='verbose', action='store_true')
+    args = parser.parse_args()
+    
+关于命令行参数，我记得有个第三方库超好用，好久贴个教程出来。
+
+### 建议 42：使用 pandas 处理大型 CSV 文件
+
+CSV 作为一种逗号分隔型值的纯文本格式文件，常用于数据库数据的导入导出，数据分析中记录的存储。Python 中的 csv 模块提供了对 CSV 的支持。
+
+列出一些常用的 API：
+
+    reader(csvfile[, dialect='excel'][, fmtparam])  # 读取一个 csv 文件，返回一个 reader 对象
+    csv.writer(csvfile, dialect='excel', **fmtparams) # 写入 csv 文件
+    csv.DictWriter(csvfile, fieldnames, restval='', extrasaction='raise', dialect='excel')
+    
+当然，处理 CSV 还有更好的选择，那就是大名鼎鼎的 Pandas，它提供两种基本的数据结构：Series 和 DataFrame。这里有个 [Pandas ](http://www.cnblogs.com/chaosimple/p/4153083.html)的教程，值得一看。
+
+### 建议 43：一般情况下使用 ElementTree 解析 XML
+
+给一个较好的学习[教程](http://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/processing-xml-in-python-with-element-tree.html)，下面直接看例子吧：
+
+    count = 0
+    for event, elem in  ET.iterparse('test.xml'):
+        if event == 'end':
+            if elem.tag == 'userid':
+                count += 1
+        elem.clear()
+    print(count)
+    
+### 建议 44：理解模块 pickle 优劣
+
+pickle 是较为通用的序列化模块，其中两个主要的函数dump()和load()分别用来进行对象的序列化和反序列化：
+
+1.pickle.dump(obj, file[, protocol])
+
+2.load(file)
+
+    In [1]: import pickle
+    In [2]: data = {'name': 'Python',   'type': 'Language', 'version': '3.5.2'}
+    In [3]: with open('pickle.dat',     'wb') as fp:
+    ...:     pickle.dump(data, fp)
+    ...:     
+    In [4]: with open('pickle.dat', 'rb') as fp:
+    ...:     out = pickle.load(fp)
+    ...:     print(out)
+    ...:     
+    {'version': '3.5.2', 'name': 'Python', 'type': 'Language'}
+    
+它还有个C语言的实现 cPickle，性能较好。但 pickle 限制较多：比如不能保证原子性操作，存在安全问题，跨语言兼容性不好等。
+
+### 建议 45：序列化的另一个不错的选择 JSON
+
+这个应该不用多做介绍了吧，书中讲得比较浅，又来放链接（逃...
+
+### 建议 46：使用 traceback 获取栈信息
+
+当发生异常，开发人员往往需要看到现场信息，trackback 模块可以满足这个需求，先列几个常用的：
+
+    traceback.print_exc()   # 打印错误类型、值和具体的trace信息
+    traceback.print_exception(type, value, traceback[, limit[, file]])  # 前三个参数的值可以从sys.exc_info()
+    raceback.print_exc([limit[, file]])         # 同上，不需要传入那么多参数
+    traceback.format_exc([limit])               # 同 print_exc()，返回的是字符串
+    traceback.extract_stack([file, [, limit]])  # 从当前栈中提取 trace 信息
+    
+traceback 模块获取异常相关的数据是通过sys.exc_info()得到的，该函数返回异常类型type、异常value、调用和堆栈信息traceback组成的元组。
+
+同时 inspect 模块也提供了获取 traceback 对象的接口。
+
+### 建议 47：使用 logging 记录日志信息
+
+仅仅将信息输出到控制台是远远不够的，更为常见的是使用日志保存程序运行过程中的相关信息，如运行时间、描述信息以及错误或者异常发生时候的特定上下文信息。Python 提供 logging 模块提供了日志功能，将日志分为 5 个级别：
+
+Level使用情形DEBUG详细的信息，在追踪问题的时候使用INFO正常的信息WARNING一些不可预见的问题发生，或者将要发生，如磁盘空间低等，但不影响程序的运行ERROR由于某些严重的问题，程序中的一些功能受到影响CRITICAL严重的错误，或者程序本身不能够继续运行
+
+之前完成过一个个人博客，总算对日志消息有了一定的了解。总的来说，日志消息是给程序员看的，在开发中，我们需要看到程序运行时的方方面面的情况，这时候给日志分级就派上用场，其实日志消息是由我们来决定它属于哪一种类型。
+
+logging.basicConfig([**kwargs]) 提供对日志系统的基本配置：
+
+格式描述filename指定 FileHandler 的文件名，而不是默认的 StreamHandlerfilemode打开文件的模式，同 open 函数中的同名参数，默认为 'a'format输出格式字符串datefmt日期格式level设置根 logger 的日志级别stream指定 StreamHandler。这个参数若与 filename 冲突，忽略 stream
+
+下面结合 traceback 和 logging 来记录程序运行过程中的异常：
+
+    import traceback
+    import sys
+    import logging
+    gList = ["a", "b", "c", "d", "e", "f", "g"]
+    logging.basicConfig( # 配置日志的输出方式及格式
+        level = logging.DEBUG,
+        filename = "log.txt",
+        filemode = "w",
+        format = "%(asctime)s % (filename)s[line:%(lineno)d] %(levelname)s % (message)s",
+    )
+
+    def f():
+        gList[5]
+        logging.info("[INFO]:calling method g() in f()")    # 记录正常的信息
+        return g()
+
+    def g():
+        logging.info("[INFO]:calling method h() in g()")
+        return h()
+
+    def h():
+        logging.info("[INFO]:Delete element in gList in h()")
+        del gList[2]
+        logging.info("[INFO]:calling method i() in h()")
+        return i()
+
+    def i():
+        logging.info("[INFO]:Append element i to gList in i()")
+        gList.append("i")
+        print(gList[7])
+
+    if __name__ == "__main__":
+        logging.debug("Information during calling f():")
+        try:
+            f()
+        except IndexError as ex:
+            print("Sorry, Exception occured, you accessed an element out of range")
+            # traceback.print_exc()
+            ty, tv, tb = sys.exc_info()
+            logging.error("[ERROR]: Sorry, Exception occured, you accessed an element out of range")    # 记录异常错误消息
+            logging.critical("object info:%s" % ex)
+            logging.critical("Error Type:{0}, Error Information:{1}".format(ty, tv))    # 记录异常的类型和对应的值
+            logging.critical("".join(traceback.format_tb(tb)))    # 记录具体的 trace 信息
+        sys.exit(1)
+            
+logging 模块让我们可以很方便地控制日志信息，如loggging.disable()传入一个日志级别会禁用该级别或比级别更低的日志消息，默认是全部禁用。大致我们常用的日志记录就这些了。
+
+### 建议 48：使用 threading 模块编写多线程程序
+
+之前学习[廖老师的 Python3 教程](http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000)的时候，关于线程有句话记得特别清楚：
+
+多线程的并发在Python中就是一个美丽的梦。
+
+由于 GIL 的存在，让 Python 多线程编程在多核处理器中无法发挥优势，但在一些使用场景下使用多线程仍然比较好，如等待外部资源返回，或建立反应灵活的用户界面，或多用户程序等。
+
+Python3 提供了两个模块：_thread和threading。_thread提供了底层的多线程支持，使用比较复杂，下面我们重点说说threading。
+
+Python 多线程支持用两种方式来创建线程：一种通过继承 Thread 类，重写它的run()方法；另一种是创建一个 threading.Thread 对象，在它的初始化函数__init__()中将可调用对象作为参数传入。
+
+threading模块中不仅有 Lock 指令锁，RLock 可重入指令锁，还支持条件变量 Condition、信号量 Semaphore、BoundedSemaphore 以及 Event 事件等。
+
+下面有一个比较经典的例子来理解多线程：
+
+    import threading
+    from time import ctime,sleep
+
+    def music(func):
+        for i in range(2):
+            print("I was listening to %s. %s" % (func,ctime()))
+            sleep(1)    # 程序休眠 1 秒
+
+    def move(func):
+        for i in range(2):
+            print("I was at the %s! %s" % (func,ctime()))
+            sleep(5)
+
+    threads = []
+    t1 =    threading.Thread(target=music,args=('爱情买卖',))
+    threads.append(t1)
+    t2 =    threading.Thread(target=move,args=('阿凡达',))
+    threads.append(t2)
+
+    if __name__ == '__main__':
+        for t in threads:
+            t.setDaemon(True)   # 声明线程为守护线程
+            t.start()
+    #3
+        print("all over %s" % ctime())
+        
+以下是运行结果：
+
+    I was listening to 爱情买卖. Tue Apr  4 17:57:02 2017
+    I was at the 阿凡达! Tue Apr  4 17:57:02 2017
+    all over Tue Apr  4 17:57:02 2017
+    
+分析：threading 模块支持线程守护，我们可以通过setDaemon()来设置线程的daemon属性，当其属性为True时，表明主线程的退出可以不用等待子线程完成，反之，daemon属性为False时所有的非守护线程结束后主线程才会结束，那运行结果为：
+
+    I was listening to 爱情买卖. Tue Apr  4 18:05:26 2017
+    I was at the 阿凡达! Tue Apr  4 18:05:26 2017
+    all over Tue Apr  4 18:05:26 2017
+    I was listening to 爱情买卖. Tue Apr  4 18:05:27 2017
+    I was at the 阿凡达! Tue Apr  4 18:05:31   2017
+    
+继续修改代码，当我们在#3处加入t.join()，此方法能够阻塞当前上下文环境，直到调用该方法的线程终止或到达指定的 timeout，此时在运行程序：
+
+    I was listening to 爱情买卖. Tue Apr  4 18:08:15 2017
+    I was at the 阿凡达! Tue Apr  4 18:08:15 2017
+    I was listening to 爱情买卖. Tue Apr  4 18:08:16 2017
+    I was at the 阿凡达! Tue Apr  4 18:08:20 2017
+    all over Tue Apr  4 18:08:25 2017
+    
+当我们把music函数的休眠时间改为 4 秒，再次运行程序：
+
+    I was listening to 爱情买卖. Tue Apr  4 18:11:16 2017
+    I was at the 阿凡达! Tue Apr  4 18:11:16 2017
+    I was listening to 爱情买卖. Tue Apr  4 18:11:20 2017
+    I was at the 阿凡达! Tue Apr  4 18:11:21 2017
+    all over Tue Apr  4 18:11:26 2017
+    
+此时我们就可以发现多线程的威力了，music虽然增加了 3 秒，然而总的运行时间仍然为 10 秒。
+
+### 建议 49：使用 Queue 使多线程编程更加安全
+
+线程间的同步和互斥，线程间数据的共享等这些都是涉及线程安全要考虑的问题。纵然 Python 中提供了众多的同步和互斥机制，如 mutex、condition、event 等，但同步和互斥本身就不是一个容易的话题，稍有不慎就会陷入死锁状态或者威胁线程安全。
+
+如何保证线程安全呢？我们先来看看 Python 中的 Queue 模块：
+
+1.Queue.Queue(maxsize)：先进先出，maxsize 为队列大小，其值为非正数的时候为无限循环队列
+
+2.Queue.LifoQueue(maxsize)：后进先出，相当于栈
+
+3.Queue.PriorityQueue(maxsize)：优先级队列
+
+以上队列所支持的方法：
+
+1.Queue.qsize()：返回近似的队列大小。当该值 > 0 的时候并不保证并发执行的时候 get() 方法不被阻塞，同样，对于 put() 方法有效。
+
+2.Queue.empty()：队列为空的时候返回 True，否则返回 False
+
+3.Queue.full()：当设定了队列大小的情况下，如果队列满则返回 True，否则返回 False
+
+4.Queue.put(item[, block[, timeout]])：往队列中添加元素 item，block 设置为 False 的时候，如果队列满则抛出 Full 异常。如果 block 设置为 True，timeout 为 None 的时候则会一直等待直到有空位置，否则会根据 timeout 的设定超时后抛出 Full 异常
+
+5.Queue.put_nowait(item)：等于 put(item, False).block 设置为 False 的时候，如果队列空则抛出 Empty 异常。如果 block 设置为 True、timeout 为 None 的时候则会一直等到有元素可用，否则会根据 timeout 的设定超时后抛出 Empty 异常
+
+6.Queue.get([block[, timeout]])：从队列中删除元素并返回该元素的值
+
+7.Queue.get_nowait()：等价于 get(False)
+
+8.Queue.task_done()：发送信号表明入列任务已经完成，经常在消费者线程中用到
+
+9.Queue.join()：阻塞直至队列中所有的元素处理完毕
+
+首先 Queue 中的队列和 collections.deque 所表示的队列并不一样，前者用于不同线程之间的通信，内部实现了线程的锁机制，后者是数据结构上的概念，支持 in 方法。
+
+Queue 模块实现了多个生产者多个消费者的队列，当多线程之间需要信息安全的交换的时候特别有用，因此这个模块实现了所需要的锁原语，为 Python 多线程编程提供了有力的支持，它是线程安全的。
+
+先来看一个简单的例子：
+
+    import os
+    import Queue
+    import threading
+    import urllib2
+
+    class DownloadThread(threading.Thead):
+
+        def __init__(self, queue):
+            threading.Thread.__init__(self)
+            self.queue = queue
+
+        def run(self):
+            while True:
+                url = self.queue.get()
+                print('{0} begin download   {1}...'.format(self.name, url))
+                self.download_file(url)
+                self.queque.task_done()
+                print('{0} download     completed!!!'.format(self.name))
+
+        def download_file(self, url):
+            urlhandler = urllib2.urlopen(url)
+            fname = os.path.basename(url) + '.html'
+            with open(fname, 'wb') as f:
+                while True:
+                    chunk = urlhandler.read(1024)
+                    if not chunk: break
+                    f.write(chunk)
+
+    if __name__ == '__main__':
+        urls = ['http://wiki.python.org/moin/   WebProgramming',
+                'https://www.createspace.com/3611970',
+                'http://wiki.python.org/moin/Documentation'
+        ]
+        queue = Queue.Queue()
+        for i range(5):
+            t = DownloadThread(queue)
+            t.setDaemon(True)
+            t.start()
+        for url in urls:
+            queue.put(url)
+        queue.join()
+        
+# 第 5 章 设计模式
+
+### 建议 50：利用模块实现单例模式
+
+满足单例模式的 3 个需求：
+
+1.只能有一个实例
+
+2.必须自行创建这个实例
+
+3.必须自行向整个系统提供这个实例
+
+下面我们使用 Python 实现一个带锁的单例：
+
+    class Singleton(object):
+
+        objs = {}
+        objs_locker = threading.Lock()
+
+        def __new__(cls, *args, **kw):
+            if cls in cls.objs:
+                return cls.objs(cls)
+            cls.objs_locker.acquire()
+            try:
+                if cls in cls.objs:
+                    return cls.objs(cls)
+                cls.objs[cls] = object.__new__(cls)
+            finally:
+                cls.objs_locker.release()
+                
+当然这种方案也存在问题：
+
+1.如果 Singleton 的子类重载了__new__()，会覆盖或干扰 Singleton 类中__new__()的执行
+
+2.如果子类有__init__()，那么每次实例化该 Singleton 的时候，__init__()都会被调用，这显然是不应该的
+
+虽然以上问题都有解决方案，但让单例的实现不够 Pythonic。我们可以重新审视 Python 的语法元素，发现模块采用的其实是天然的单例的实现方式：
+
+1.所有的变量都会绑定到模块
+
+2.模块只初始化一次
+
+3.import 机制是线程安全的，保证了在并发状态下模块也只是一个实例
+
+    # World.py
+    import Sun
+
+    def run():
+        while True:
+            Sun.rise()
+            Sun.set()
+
+    # main.py
+    import World
+    World.run()
+    
+感觉这是最炫酷的单例模式。
+
+### 建议 51：用 mixin 模式让程序更加灵活
+
+模板方法模式就是在一个方法中定义一个算法的骨架，并将一些实现步骤延迟到子类中。模板方法可以使子类在不改变算法结构的情况下，重新定义算法中的某些步骤。
+
+来看一个例子：
+
+    class People(object):
+        def make_tea(self):
+            teapot = self.get_teapot()
+            teapot.put_in_tea()
+            teapot.put_in_water()
+            return teapot
+            
+显然get_teapot()方法并不需要预先定义，也就是说我们的基类不需要预先申明抽象方法，子类只需要继承 People 类并实现get_teapot()，这给调试代码带来了便利。但我们又想到如果一个子类 StreetPeople 描述的是正走在街上的人，那这个类将不会实现get_teapot()，一调用make_tea()就会产生找不到get_teapot()的 AttributeError，所以此时程序员应该立马想到，随着需求的增多，越来越多的 People 子类会选择不喝茶而喝咖啡，或者是抽雪茄之类的，按照以上的思路，我们的代码只会变得越发难以维护。
+
+所以我们希望能够动态生成不同的实例：
+
+    class UseSimpleTeapot(object):
+        def get_teapot(self):
+            return SimpleTeapot()
+
+    class UseKungfuTeapot(object):
+        def get_teapot(self):
+            return KungfuTeapot()
+
+    class OfficePeople(People, UseSimpleTeapot): pass
+
+    class HomePeople(People, UseSimpleTeapot): pass
+
+    class Boss(People, UseKungfuTeapot): pass
+
+    def simple_tea_people():
+        people = People()
+        people.__base__ += (UseSimpleTeapot,)
+        return people
+
+    def coffee_people():
+        people = People()
+        people.__base__ += (UseCoffeepot,)
+
+    def tea_and_coffee_people():
+        people = People()
+        people.__base__ += (UseSimpleTeapot,    UserCoffeepot,)
+        return people
+
+    def boss():
+        people = People()
+        people.__base__ += (KungfuTeapot, UseCoffeepot, )
+        return people
+        
+以上代码的原理在于每个类都有一个__bases__属性，它是一个元组，用来存放所有的基类，作为动态语言，Python 中的基类可以在运行中可以动态改变。所以当我们向其中增加新的基类时，这个类就拥有了新的方法，这就是混入mixin。
+
+利用这个技术我们可以在不修改代码的情况下就可以完成需求：
+
+    import mixins   # 把员工需求定义在 Mixin 中放在 mixins 模块
+
+    def staff():
+        people = People()
+        bases = []
+        for i in config.checked():
+            bases.append(getattr(maxins, i))
+        people.__base__ += tuple(bases)
+        return people
+        
+### 建议 52：用发布订阅模式实现松耦合
+
+发布订阅模式是一种编程模式，消息的发送者不会发送其消息给特定的接收者，而是将发布的消息分为不同的类别直接发布，并不关注订阅者是谁。而订阅者可以对一个或多个类别感兴趣，且只接收感兴趣的消息，并且不关注是哪个发布者发布的消息。要实现这个模式，就需要一个中间代理人 Broker，它维护着发布者和订阅者的关系，订阅者把感兴趣的主题告诉它，而发布者的信息也通过它路由到各个订阅者处。
+
+    from collections import defaultdict
+    route_table = defaultdict(list)
+    def sub(topic, callback):
+        if callback in route_table[topic]:
+            return
+        route_table[topic].append(callback)
+
+    def pub(topic, *args, **kw):
+        for func in route_table[topic]:
+            func(*args, **kw)
+            
+将以上代码放在 Broker.py 的模块，省去了各种参数检测、优先处理、取消订阅的需求，只向我们展示发布订阅模式的基础实现：
+
+    import Broker
+    def greeting(name):
+        print('Hello, {}'.format(name))
+    Broker.sub('greet', greeting)
+    Broker.pub('greet', 'LaiYonghao')
+    
+注意学习 blinker 和 python-message 两个模块
+
+### 建议 53：用状态模式美化代码
+
+所谓状态模式，就是当一个对象的内在状态改变时允许改变其行为，但这个对象看起来像是改变了其类。
+
+    def workday():
+        print('work hard')
+
+    def weekend():
+        print('play harder')
+
+    class People(object): pass
+    people = People()
+    while True:
+        for i in range(1, 8):
+            if i == 6:
+                people.day = weekend
+            if i == 1:
+                people.day = workday
+            people.day()
+            
+但上述例子还有缺陷：
+
+1.查询对象的当前状态很麻烦
+
+2.状态切换时需要对原状态做一些清扫工作，而对新状态做初始化工作，因每个状态需要做的事情不同，全部写在切换状态的代码中必然重复
+
+这时候我们可以使用 Python-state 来解决。
+
+改写之前的例子：
+
+    from state import curr, switch, stateful, State,    behavior
+    @stateful
+    class People(object):
+        class Workday(State):
+            default = True
+            @behavior   # 相当于staticmethod
+            def day(self):  # 这里的self并不是Python的关键字，而是有助于我们理解状态类的宿主是People的实例
+                print('work hard')
+        class Weekend(State):
+            @behavior
+            def day(self):
+                print('play harder')
+    people = People()
+    while True:
+        for i in range(1, 8):
+            if i == 6:
+                switch(people, People.Weekend)
+            if i == 1:
+                switch(people, People.Workday)
+            people.day()
+            
+@statefule装饰器重载了被修饰的类的__getattr__()从而使得 People 的实例能够调用当前状态类的方法，同时被修饰的类的实例是带有状态的，能够使用curr()查询当前状态，也可以使用switch()进行状态切换，默认的状态是通过类定义的 default 属性标识，default = True的类成为默认状态。
+
+状态类 Workday 和 Weekend 继承自 State 类，从其派生的子类可以使用__begin__和__end___状态转换协议，自定义进入和离开当前状态时对宿主的初始化和清理工作。
+
+下面是一个真实业务的例子：
+
+    @stateful
+    class User(object):
+        class NeedSignin(State):
+            default = True
+            @behavior
+            def signin(self, user, pwd):
+                ...
+                switch(self, Player.Signin)
+        class Signin(State):
+            @behavior
+            def move(self, dst): ...
+            @behavior
+            def atk(self, other): ...
+            
+# 第 6 章 内部机制
+
+### 建议 54：理解 built-in objects
+
+Python 中一切皆对象，在新式类中，object 是所有内建类型的基类，用户自定义的类可以继承自 object 也可继承自内建类型。
+
+    In [1]: class TestNewClass:
+    ...:     __metaclass__ = type
+    ...:     
+
+    In [2]: type(TestNewClass)
+    Out[2]: type
+
+    In [3]: TestNewClass.__bases__
+    Out[3]: (object,)
+
+    In [4]: a = TestNewClass()
+
+    In [5]: type(a)
+    Out[5]: __main__.TestNewClass
+
+    In [6]: a.__class__
+    Out[6]: __main__.TestNewClass
+    
+新式类支持 property 和描述符特性，作为新式类的祖先，Object 类还定义了一些特殊方法：__new__()、__init__()、__delattr__()、__getattribute__()、__setattr__()、__hash__()、__repr__()、__str__()等。
+
+### 建议 55：__init__()不是构造方法
+
+    class A(object):
+        def __new__(cls, *args, **kw):
+            print(cls)
+            print(args)
+            print(kw)
+            print('----------')
+            instance = object.__new__(cls, *args, **kw)
+            print(instance)
+        def __init__(self, a, b):
+            print('init gets called')
+            print('self is {}'.format(self))
+            self.a, self.b = a, b
+    a1 = A(1, 2)
+    print(a1.a)
+    print(a1.b)
+    
+运行结果：
+
+    <class '__main__.A'>
+    (1, 2)
+    {}
+    ----------
+    Traceback (most recent call last):
+    File "test.py", line 19, in <module>
+        a1 = A(1, 2)
+    File "test.py", line 13, in __new__
+        instance = object.__new__(cls, *args, **kw)
+    TypeError: object() takes no parameters
+    
+从结果中我们可以看出，程序输出了__new__()调用所产生的输出，并抛出了异常。于是我们知道，原来__new__()才是真正创建实例，是类的构造方法，而__init__()是在类的对象创建好之后进行变量的初始化。上面程序抛出异常是因为在__new__()中没有显式返回对象，a1此时为None，当去访问实例属性时就抛出了异常。
+
+根据官方文档，我们可以总结以下几点：
+
+1.object.__new__(cls[, args...])：其中 cls 代表类，args 为参数列表，为静态方法
+
+2.object.__init__(self[, args...])：其中 self 代表实例对象，args 为参数列表，为实例方法
+
+3.控制实例创建的时候可使用 __new__() ，而控制实例初始化的时候使用 __init__()
+
+4.__new__()需要返回类的对象，当返回类的对象时将会自动调用__init__()进行初始化，没有对象返回，则__init__()不会被调用。__init__() 方法不需要显示返回，默认为 None，否则会在运行时抛出 TypeError
+
+5.但当子类继承自不可变类型，如 str、int、unicode 或者 tuple 的时候，往往需要覆盖__new__()
+
+6.覆盖 __new__() 和 __init__() 的时候这两个方法的参数必须保持一致，如果不一致将导致异常
+
+下面我们来总结需要覆盖__new__()的几种特殊情况：
+
+1.当类继承不可变类型且默认的 __new__() 方法不能满足需求的时候
+
+2.用来实现工厂模式或者单例模式或者进行元类编程，使用__new__()来控制对象创建
+
+3.作为用来初始化的 __init__() 方法在多继承的情况下，子类的 __init__()方法如果不显式调用父类的 __init__() 方法，则父类的 __init__() 方法不会被调用；通过super(子类， self).__init__()显式调用父类的初始化方法；对于多继承的情况，我们可以通过迭代子类的 __bases__ 属性中的内容来逐一调用父类的初始化方法
+
+分别来看例子加深理解：
+
+    # 创建一个集合能够将任何以空格隔开的字符串变为集合中的元素
+    class UserSet(frozenset):
+        def __new__(cls, *args):
+            if args and isinstance(args[0], str):
+                args = (args[0].split(), ) + args[1:]
+            return super(UserSet, cls).__new__(cls, *args)
+
+    # 一个工厂类根据传入的参量决定创建出哪一种产品类的实例
+    class Shape(object):
+        def __init__(object):
+            pass
+        def draw(self):
+            pass
+
+    class Triangle(Shape):
+        def __init__(self):
+            print("I am a triangle")
+        def draw(self):
+            print("I am drawing triangle")
+
+    class Rectangle(Shape):
+        def __init__(self):
+            print("I am a rectangle")
+        def draw(self):
+            print("I am drawing triangle")
+
+    class Trapezoid(Shape):
+        def __init__(self):
+            print("I am a trapezoid")
+        def draw(self):
+            print("I am drawing triangle")
+
+    class Diamond(Shape):
+        def __init__(self):
+            print("I am a diamond")
+        def draw(self):
+            print("I am drawing triangle")
+
+    class ShapeFactory(object):
+        shapes = {'triangle': Triangle, 'rectangle':    Rectangle, 'trapzoid': Trapezoid, 'diamond': Diamond}
+        def __new__(cls, name):
+            if name in ShapeFactory.shapes.keys():
+                print('creating a new shape     {}'.format(name))
+                return ShapeFactory.shapes[name]()
+            else:
+                print('creating a new shape     {}'.format(name))
+                return Shape()
+                
+### 建议 56：理解名字查找机制
+
+在 Python 中所谓的变量其实都是名字，这些名字指向一个或多个 Python 对象。这些名字都存在于一个表中（命名空间），我们称之为局部变量，调用locals()可以查看：
+
+    >>> locals()
+    {'__package__': None, '__spec__': None, '__loader__': <class '_frozen_importlib.BuiltinImporter'>, '__doc__': None, '__name__': '__main__', '__builtins__': <module 'builtins' (built-in)>}
+    >>> globals()
+    {'__loader__': <class   '_frozen_importlib.BuiltinImporter'>, '__builtins__': <module 'builtins' (built-in)>, '__package__': None, '__doc__': None, '__spec__': None, '__name__': '__main__'}
+    
+Python 中的作用域分为：
+
+1.局部作用域: 一般来说函数的每次调用都会创建一个新的本地作用域, 拥有新的命名空间
+
+2.全局作用域: 定义在 Python 模块文件中的变量名拥有全局作用域, 即在一个文件的顶层的变量名仅在这个文件内可见
+
+3.嵌套作用域: 多重函数嵌套时才会考虑, 即使使用 global 进行申明也不能达到目的, 其结果最终是在嵌套的函数所在的命名空间中创建了一个新的变量
+
+4.内置作用域: 通过标准库中的__builtin__实现的
+
+当访问一个变量的时候，其查找顺序遵循变量解析机制 LEGB 法则，即依次搜索 4 个作用域：局部作用域、嵌套作用域、全局作用域以及内置作用域，并在第一个找到的地方停止搜寻，如果没有搜到，则会抛出异常。
+
+Python 3 中引入了 nonlocal 关键字:
+
+    def foo(x):
+        a = x
+        def bar():
+            nonlocal a
+            b = a * 2
+            a = b + 1
+            print(a)
+        return bar
+        
+### 建议 57: 为什么需要 self 参数
+
+在类中当定义实例方法的时候需要将第一个参数显式声明为self, 而调用时不需要传入该参数, 我们通过self.x访问实例变量, self.m()访问实例方法:
+
+    class SelfTest(object):
+        def __init__(self.name):
+            self.name = name
+        def showself(self):
+            print('self here is {}'.format(self))
+        def display(self):
+            self.showself()
+            print('The name is: {}'.format(self.name))
+    st = SelfTest('instance self')
+    st.display()
+    print('{}'.format(st))
+运行结果:
+
+    self here is <__main__.SelfTest object at 0x7f440c53ba58>
+    The name is: instance self
+    <__main__.SelfTest object at 0x7f440c53ba58>
+    
+从中可以发现, self 表示实例对象本身, 即 SelfTest 类的对象在内存中的地址. self 是对对象 st 本身的引用, 我们在调用实例方法时也可以直接传入实例对象: SelfTest.display(st). 同时 self 或 cls 并不是 Python 的关键字, 可以替换成其它的名称.
+
+Python 中为什么需要 self 呢:
+
+1.借鉴了其他语言的特征
+
+2.Python 语言本身的动态性决定了使用 self 能够带来一定便利
+
+3.在存在同名的局部变量以及实例变量的情况下使用 self 使得实例变量更容易被区分
+
+Python 属于一级对象语言, 我们有好几种方法可以引用类方法:
+
+    A.__dict__["m"]
+    A.m.__func__
+    
+Python 的哲学是：显示优于隐式（Explicit is better than implicit）.
+
+### 建议 58: 理解 MRO 与多继承
+
+古典类与新式类所采取的 MRO (Method Resolution Order, 方法解析顺序) 的实现方式存在差异.
+
+古典类是按照多继承申明的顺序形成继承树结构, 自顶向下采用深度优先的搜索顺序. 而新式类采用的是 C3 MRO 搜索方法, 在新式类通过__mro__得到 MRO 的搜索顺序, C3 MRO 的算法描述如下:
+
+假定，C1C2...CN 表示类 C1 到 CN 的序列，其中序列头部元素（head）=C1，序列尾部（tail）定义 = C2...CN；
+
+C 继承的基类自左向右分别表示为 B1，B2...BN
+
+L[C] 表示 C 的线性继承关系，其中 L[object] = object。
+
+算法具体过程如下：
+
+L[C(B1...BN)] = C + merge(L[B1] ... L[BN], B1 ... BN)
+
+其中 merge 方法的计算规则如下：在 L[B1]...L[BN]，B1...BN 中，取 L[B1] 的 head，如果该元素不在 L[B2]...L[BN]，B1...BN 的尾部序列中，则添加该元素到 C 的线性继承序列中，同时将该元素从所有列表中删除（该头元素也叫 good head），否则取 L[B2] 的 head。继续相同的判断，直到整个列表为空或者没有办法找到任何符合要求的头元素（此时，将引发一个异常）。
+
+菱形继承是我们在多继承设计的时候需要尽量避免的一个问题.
+
+### 建议 59: 理解描述符机制
+
+    In [1]: class MyClass(object):
+    ...:     class_attr = 1
+    ...:     
+    # 每一个类都有一个__dict__属性, 包含它的所有属性
+    In [2]: MyClass.__dict__
+    Out[2]:
+    mappingproxy({'__dict__': <attribute '__dict__' of  'MyClass' objects>,
+                '__doc__': None,
+                '__module__': '__main__',
+                '__weakref__': <attribute '__weakref__'     of 'MyClass' objects>,
+                'class_attr': 1})
+
+    In [3]: my_instance = MyClass()
+    # 每一个实例也相应有一个实例属性, 我们通过实例访问一个属性时,
+    # 它首先会尝试在实例属性中查找, 找不到会到类属性中查找
+    In [4]: my_instance.__dict__
+    Out[4]: {}
+    # 实例访问类属性
+    In [5]: my_instance.class_attr
+    Out[5]: 1
+    # 如果通过实例增加一个属性,只能改变此实例的属性
+    In [6]: my_instance.inst_attr = 'china'
+
+    In [7]: my_instance.__dict__
+    Out[7]: {'inst_attr': 'china'}
+    # 对于类属性而言并没有丝毫变化
+    In [8]: MyClass.__dict__
+    Out[8]:
+    mappingproxy({'__dict__': <attribute '__dict__' of  'MyClass' objects>,
+                '__doc__': None,
+                '__module__': '__main__',
+                '__weakref__': <attribute '__weakref__'     of 'MyClass' objects>,
+                'class_attr': 1})
+    # 我们可以动态地给类增加一个属性
+    In [9]: MyClass.class_attr2 = 100
+
+    In [10]: my_instance.class_attr2
+    Out[10]: 100
+    # 但Python的内置类型并不能随意地为它增加属性或方法
+
+.操作符封装了对实例属性和类属性两种不同属性进行查找的细节。
+
+但是如果是访问方法呢:
+
+    In [1]: class MyClass(object):
+    ...:     def my_method(self):
+    ...:         print('my_method')
+    ...:         
+
+    In [2]: MyClass.__dict__['my_method']
+Out[2]: <function __main__.MyClass.my_method>
+
+    In [3]: MyClass.my_method
+    Out[3]: <function __main__.MyClass.my_method>
+
+    In [4]: type(MyClass.my_method)
+    Out[4]: function
+
+    In [5]: type(MyClass.__dict__['my_method'])
+    Out[5]: function
+    
+根据通过实例访问属性和根据类访问属性的不同，有以下两种情况：
+
+1.一种是通过实例访问，比如代码 obj.x，如果 x 是一个描述符，那么 __getattribute__() 会返回 type(obj).__dict__['x'].__get__(obj, type(obj)) 结果，即：type(obj) 获取 obj 的类型；type(obj).__dict__['x'] 返回的是一个描述符，这里有一个试探和判断的过程；最后调用这个描述符的 __get__() 方法。
+
+2.另一个是通过类访问的情况，比如代码 cls.x，则会被 __getattribute__()转换为 cls.__dict__['x'].__get__(None, cls)。
+
+描述符协议是一个 Duck Typing 的协议，而每一个函数都有 __get__ 方法，也就是说其他每一个函数都是描述符。所有对属性, 方法进行修饰的方案往往都用到了描述符, 如classmethod, staticmethod, property等, 以下是property的参考实现:
+
+    class Property(object):
+        "Emulate PyProperty_Type() in Objects/  descrobject.c"
+        def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+            self.fget = fget
+            self.fset = fset
+            self.fdel = fdel
+            self.__doc__ = doc
+        def __get__(self, obj, objtype=None):
+            if obj is None:
+                return self
+            if self.fget is None:
+                raise AttributeError, "unreadable   attribute"
+            return self.fget(obj)
+        def __set__(self, obj, value):
+            if self.fset is None:
+                raise AttributeError, "can't set attribute"
+            self.fset(obj, value)
+        def __delete__(self, obj):
+            if self.fdel is None:
+                raise AttributeError, "can't delete attribute"
+            self.fdel(obj)
+            
+### 建议 60：区别__getattr__()和__getattribute__()方法
+
+以上两种方法可以对实例属性进行获取和拦截：
+
+1.__getattr__(self, name)：适用于属性在实例中以及对应的类的基类以及祖先类中都不存在；
+
+2.__getattribute__(self, name)：对于所有属性的访问都会调用该方法
+
+但访问不存在的实例属性时，会由内部方法__getattribute__()抛出一个 AttributeError 异常，也就是说只要涉及实例属性的访问就会调用该方法，它要么返回实际的值，要么抛出异常。详情[请参考](https://docs.python.org/2/reference/datamodel.html#object.getattribute)。
+
+那么__getattr__()在什么时候调用呢：
+
+1.属性不在实例的__dict__中；
+
+2.属性不在其基类以及祖先类的__dict__中；
+
+3.触发AttributeError异常时（注意，不仅仅是__getattribute__()方法的AttributeError异常，property 中定义的get()方法抛出异常的时候也会调用该方法）。
+
+当这两个方法同时被定义的时候，要么在__getattribute__()中显式调用，要么触发AttributeError异常，否则__getattr__()永远不会被调用。
+
+我们知道 property 也能控制属性的访问，如果一个类中如果定义了 property、__getattribute__()以及__getattr__()来对属性进行访问控制，会最先搜索__getattribute__()方法，由于 property 对象并不存在于 dict 中，因此并不能返回该方法，此时会搜索 property 中的get()方法；当 property 中的set()方法对属性进行修改并再次访问 property 的get()方法会抛出异常，这时会触发__getattr__()的调用。
+
+参考资料：https://zhuanlan.zhihu.com/p/26748481
+
+
