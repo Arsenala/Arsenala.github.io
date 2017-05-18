@@ -1,0 +1,331 @@
+---
+layout:     post
+title:      "改善 Python 程序的 91 个建议（二）"
+subtitle:   "Python"
+date:       2017-05-18 00:00:00
+author:     "yufengzhe"
+header-img: "img/post-bg-python.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - Python
+    - Python 入门
+    - Python 教程
+---
+
+### 建议 24：遵循异常处理的几点基本原则
+
+异常处理的几点原则：
+
+1.注意异常的粒度，不推荐在 try 中放入过多的代码
+
+2.谨慎使用单独的 except 语句处理所有异常，最好能定位具体的异常
+
+3.注意异常捕获的顺序，在适合的层次处理异常，Python 是按内建异常类的继承结构处理异常的，所以推荐的做法是将继承结构中子类异常在前抛出，父类异常在后抛出
+
+4.使用更为友好的异常信息，遵守异常参数的规范
+
+### 建议 25：避免 finally 中可能发生的陷阱
+
+当 finally 执行完毕时，之前临时保存的异常将会再次被抛出，但如果 finally 语句中产生了新的异常或执行了 return 或 break 语句，那么临时保存的异常将会被丢失，从而异常被屏蔽。
+
+在实际开发中不推荐 finally 中使用 return 语句进行返回。
+
+### 建议 26：深入理解 None，正确判断对象是否为空
+
+类型FalseTrue布尔False （与0等价）True （与1等价）字符串""（ 空字符串）非空字符串，例如 " ", "blog"数值0, 0.0非0的数值，例如：1, 0.1, -1, 2容器[], (), {}, set()至少有一个元素的容器对象，例如：[0], (None,), ['']NoneNone非None对象
+
+    >>> id(None)
+    10743840
+    >>> a = None
+    >>> id(a)
+    10743840
+    >>> l = []
+    >>> if l is not None:       # 判断逻辑 l 不为空
+    ...     print('l is {}'.format(l))
+    ... else:
+    ...     print('l is empty')
+    ... 
+    l is []
+    >>> if l:   # #3 正确的判断形式
+    ...     print('Do something...')
+    ... else:
+    ...     print('Do other thing...')
+    ... 
+    Do other thing...
+    
+3执行中会调用__nonzero__()来判断自身对象是否为空并返回0/1或True/False，如果没有定义该方法，Python 将调用__len__()进行判断，返回 0 表示为空。如果一个类既没有定义__len__()又没有定义__nonzero__()，该类实例用 if 判断为True。
+
+### 建议 27：连接字符串优先使用 join 而不是 +
+
+这一点之前我在博文里总结过，+涉及到更多的内存操作。
+
+### 建议 28：格式化字符串时尽量使用 .format 而不是 %
+
+同上。
+
+### 建议 29：区别对待可变对象和不可变对象
+
+Python 中一切皆对象，每个对象都有一个唯一的标识符（id）、类型（type）和值。数字、字符串、元组属于不可变对象，字典、列表、字节数组属于可变对象。
+
+    class Student(object):
+        def __init__(self, name, course=[]):    # 问题就出在这里
+            self.name = name
+            self.course = course
+        def addcourse(self, coursename):
+                self.course.append(coursename)
+        def printcourse(self):
+            for item in self.course:
+                print(item)
+    stuA = Student('Wang yi')
+    stuA.addcourse('English')
+    stuA.addcourse('Math')
+    print("{}'s course:     ".format(stuA.name))
+    stuA.printcourse()
+    print('---------------------------')
+    stuB = Student('Su san')
+    stuB.addcourse('Chinese')
+    stuB.addcourse('Physics')
+    print("{}'s course: ".format(stuB.name))
+    stuB.printcourse()
+    # run
+    Wang yi's course: 
+    English
+    Math
+    ---------------------------
+    Su san's course: 
+    English
+    Math
+    Chinese
+    Physics
+    
+默认参数在初始化时仅仅被评估一次，以后直接使用第一次评估的结果，course 指向的是 list 的地址，每次操作的实际上是 list 所指向的具体列表，所以对于可变对象的更改会直接影响原对象。
+
+最好的方法是传入None作为默认参数，在创建对象的时候动态生成列表。
+
+    >>> list1 = ['a', 'b', 'c']
+    >>> list2 = list1
+    >>> list1.append('d')
+    >>> list2
+    ['a', 'b', 'c', 'd']
+    >>> list3 = list1[:]    # 可变对象的切片操作相当于浅拷贝
+    >>> list3.remove('a')
+    >>> list3
+    ['b', 'c', 'd']
+    >>> list1
+    ['a', 'b', 'c', 'd']
+    
+### 建议 30：[]、() 和 {} 一致的容器初始化形式
+
+    >>> list1 = [['Hello', 'World'], ['Goodbye', 'World']]
+    >>> list2 = [[s.upper() for s in xs] for xs in list1]
+    >>> list2
+    [['HELLO', 'WORLD'], ['GOODBYE', 'WORLD']]
+    >>> [v**2 if v%2 == 0 else v+1 for v in [2, 3, 4, -1] if v>0]
+    [4, 4, 16]
+    
+其实就是列表生成式、元组生成式和字典生成式。
+
+### 建议 31：记住函数传参既不是传值也不是传引用
+
+正确的说法是传对象（call by object）或传对象的引用（call-by-object-reference），函数参数在传递过程中将整个对象传入，对可变对象的修改在函数外部以及内部都可见，对不可变对象的”修改“往往是通过生成一个新对象然是赋值实现的。
+
+### 建议 32：警惕默认参数潜在的问题
+
+其中就是默认参数如果是可变对象，在调用者和被调用者之间是共享的。
+
+    import time
+    # 对当前系统时间进行处理
+    def report(when=time.time): # 而不是   when=time.time()
+    pass
+    
+### 建议 33：慎用变长参数
+
+原因如下：
+
+1.使用过于灵活，导致函数签名不够清晰，存在多种调用方式
+
+2.使用 *args 和 ** kw简化函数定义就意味着函数可以有更好的实现方法
+
+使用场景：
+
+1.为函数添加一个装饰器
+
+2.参数数目不确定
+
+3.实现函数的多态或子类需要调用父类的某些方法时
+
+### 建议 34：深入理解 str() 和repr() 的区别
+
+总结几点：
+
+1.str()面向用户，返回用户友好和可读性强的字符串类型；repr()面向 Python 解释器或开发人员，返回 Python 解释器内部的含义
+
+2.解释器中输入a默认调用repr()，而print(a)默认调用str()
+
+3.repr()返回值一般可以用eval()还原对象：obj == eval(repr(obj))
+
+4.以上两个方法分别调用内建的__str__()和__repr__()，一般来说类中都应该定义__repr__()，但当可读性比准确性更为重要时应该考虑__str__()，用户实现__repr__()方法的时候最好保证其返回值可以用eval()是对象还原
+
+### 建议 35：分清 staticmethod 和 classmethod 的适用场景
+
+这两种方法之前已经总结过了的，下面我们只讨论它们的使用场景。
+
+调用类方法装饰器的修饰器的方法，会隐式地传入该对象所对应的类，可以动态生成对应的类的类变量，同时如果我们期望根据不同的类型返回对应的类的实例，类方法才是正确的解决方案。
+
+反观静态方法，当我们所定义的方法既不跟特定的实例相关也不跟特定的类相关，可以将其定义为静态方法，这样使我们的代码能够有效地组织起来，提高可维护性。
+
+当然，也可以考虑定义一个模块，将一组的方法放入其中，通过模块来访问。
+
+# 第 4 章 库
+
+### 建议 36：掌握字符串的基本用法
+
+    # 小技巧：Python 遇到未闭合的小括号会自动将多行代码拼接为一行
+    >>> s = ('SELECT * '
+    ...      'FROM table '
+    ...      'WHERE field="value"')
+    >>> s
+    'SELECT * FROM table WHERE  field="value"'
+    # Python2 中使用 basestring 正确判断一个变量是否是字符串
+    # 性质判断
+    isalnum() isalpha() isdigit()   islower() isupper() isspace() istitle()
+    # 查找替换
+    startswith(prefix[, start[, end]]) endswith(suffix[, start[, end]]) # prefix参数可以接收 tuple 类型的实参
+    count(sub[, start[, end]]) find(sub[, start[, end]]) index(sub[, start[, end]])
+    rfind(sub[, start[, end]]) rindex(sub[, start[, end]]) replace(old, new[, count])   # count是指的替换次数，不指定就全部替换
+    # 切分
+    partition(sep) rpartition(sep) splitlines([keepends]) split([sep, [, maxsplit]]) rsplit([sep[, maxsplit]])  # partition 返回一个3个元素的元组对象
+    # 变形
+    lower() upper() capitalize() swapcase() title()
+    # 删减填充
+    strip([chars]) lstrip([chars]) rstrip([chars]) # 没有提供chars默认是空白符，由string.whitespace 常量定义
+    center(width[, fillchar]) ljuct(width[, fillchar]) rjust(width[, fillchar])
+    zfill(width) expandtabs([tabszie])
+
+下面来介绍一些易混淆的地方：
+
+    >>> '  hello world'.split()
+    ['hello', 'world']
+    >>> '  hello world'.split(' ')
+    ['', '', 'hello', 'world']
+    >>> 'hello wORld'.title()
+    'Hello World'
+    >>> import string
+    >>> string.capwords(' hello world!')
+    'Hello World!'
+    >>> string.whitespace
+    ' \t\n\r\x0b\x0c'
+    
+### 建议 37：按需选择 sort() 或者 sorted()
+
+    # 函数原型
+    sorted(iterable[, cmp[, key[, reverse]]])   # 返回一个排序后的列表
+    s.sort([cmp[, key[, reverse]]])             # 直接修改原列表，返回为None
+    >>> persons = [{'name': 'Jon', 'age': 32}, {'name': 'Alan', 'age': 50},     {'name': 'Bob', 'age': 23}]
+    >>> sorted(persons, key=lambda x:   (x['name'], -x['age']))
+    [{'name': 'Alan', 'age': 50}, {'name': 'Bob', 'age': 23}, {'name': 'Jon', 'age': 32}]
+    >>> a = (1, 2, 4, 2, 3)
+    >>> sorted(a)
+    [1, 2, 2, 3, 4]
+    
+所以如果实际过程中需要保留原有列表，可以使用sorted()。sort()不需要复制原有列表，消耗内存较小，效率较高。同时传入参数key比传入参数cmp效率要高，cmp传入的函数在整个排序过程中会调用多次，而key针对每个元素仅作一次处理。
+
+### 建议 38：使用 copy 模块深拷贝对象
+
+浅拷贝（shallow copy）：构造一个新的复合对象并将从原对象中发现的引用插入该对象中。工厂函数、切片操作、copy 模块中的 copy 操作都是浅拷贝
+
+深拷贝（deep copy）：针对引用所指向的对象继续执行拷贝，因此产生的对象不受其它引用对象操作的影响。深拷贝需要依赖 copy 模块的 deepcopy() 操作
+
+在 python 中，标识一个对象唯一身份的是：对象的id(内存地址)，对象类型，对象值，而浅拷贝就是创建一个具有相同类型，相同值但不同id的新对象。因此使用浅拷贝的典型使用场景是：对象自身发生改变的同时需要保持对象中的值完全相同，比如 list 排序：
+
+    def sorted_list(olist, key=None):
+        copied_list = copy.copy(olist)
+        copied_list.sort(key=key)
+        return copied_list
+    a = [3, 2, 1]       # [3, 2, 1]
+    b = sorted_list(a)  # [1, 2, 3]
+    
+深拷贝不仅仅拷贝了原始对象自身，也对其包含的值进行拷贝，它会递归的查找对象中包含的其他对象的引用，来完成更深层次拷贝。因此，深拷贝产生的副本可以随意修改而不需要担心会引起原始值的改变：
+
+    >>> a = [1, 2]
+    >>> b = [a, a]
+    >>> b
+    [[1, 2], [1, 2]]
+    >>> from copy import deepcopy
+    >>> c = deepcopy(b)
+    >>> id(b[0]) == id(c[0])
+    False
+    >>> id(b[0]) == id(b[1])
+    True
+    >>> c
+    [[1, 2], [1, 2]]
+    >>> c[0].append(3)
+    >>> c
+    [[1, 2, 3], [1, 2, 3]]
+    
+使用 _copy_ 和 __deepcopy__ 可以完成对一个对象拷贝的定制。
+
+[参考博文](http://wecatch.me/blog/2016/06/18/python-copy-deepcopy/)
+
+### 建议 39： 使用 Counter 进行计数统计
+
+常见的计数统计可以使用dict、defaultdict、set和list，不过 Python 提供了一个更优雅的方式：
+
+    >>> from collections import Counter
+    >>> some_data = {'a', '2', 2, 3, 5, 'c', '7', 4, 5, 'd', 'b'}
+    >>> Counter(some_data)
+    Counter({'7'，: 1, 2: 1, 3: 1, 4: 1, 5: 1, '2': 1, 'b': 1, 'a': 1, 'd': 1, 'c': 1})
+    
+Counter 类属于字典类的子类，是一个容器对象，用来统计散列对象，支持+、-、&、|，其中&和|分别返回两个 Counter 对象各元素的最小值和最大值。
+
+    # 初始化
+    Counter('success')
+    Counter(s=3, c=2, e=1, u=1)
+    Counter({'s': 3, 'c': 2, 'u': 1, 'e': 1})
+    # 常用方法
+    list(Counter(some_data).elements())     # 获取 key 值
+    Counter(some_data).most_common(2)           # 前 N 个出现频率最高的元素以及对应的次数
+    (Counter(some_data))['y']                   # 访问不存在的元素返回 0
+    c = Counter('success')
+    c.update('successfully')                    # 更新统计值
+    c.subtract('successfully')                  # 统计数相减，允许为0或为负
+    
+### 建议 40：深入掌握 ConfigParser
+
+几乎所有的应用程序都会读取配置文件，ini是一种比较常见的文件格式：
+
+    [section1]
+    option1=0
+    
+Python 提供标准库 ConfigParser 来支持它：
+
+    import ConfigParser
+    conf = ConfigParser.ConfigParser()
+    conf.read('example.conf')
+    print(conf.get('section1',  'in_default'))
+    
+再来看个SQLAlchemy配置文件的例子：
+
+    [DEFAULT]
+    conn_str = %(dbn)s://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s
+    dbn = mysql
+    user = root
+    host = localhost
+    port = 3306
+    [db1]
+    user = aaa
+    pw = ppp
+    db = example
+    [db2]
+    host = 192.168.0.110
+    pw = www
+    db = example
+    import ConfigParser
+    conf = ConfigParser.ConfigParser()
+    conf.read('format.conf')
+    print(conf.get('db1', 'conn_str'))
+    print(conf.get('db2', 'conn_str'))
+
+
+
