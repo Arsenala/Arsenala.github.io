@@ -326,6 +326,8 @@ Python 提供标准库 ConfigParser 来支持它：
     conf.read('format.conf')
     print(conf.get('db1', 'conn_str'))
     print(conf.get('db2', 'conn_str'))
+    
+ 参考资料：https://zhuanlan.zhihu.com/p/26162701
 
 
 
