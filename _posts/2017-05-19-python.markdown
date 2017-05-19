@@ -339,9 +339,9 @@ Queue 模块实现了多个生产者多个消费者的队列，当多线程之�
                 
 当然这种方案也存在问题：
 
-1.如果 Singleton 的子类重载了__new__()，会覆盖或干扰 Singleton 类中__new__()的执行
+1.如果 Singleton 的子类重载了 __ new __ ()，会覆盖或干扰 Singleton 类中 __ new __ ()的执行
 
-2.如果子类有__init__()，那么每次实例化该 Singleton 的时候，__init__()都会被调用，这显然是不应该的
+2.如果子类有 __ init __ ()，那么每次实例化该 Singleton 的时候， __ init __ ()都会被调用，这显然是不应该的
 
 虽然以上问题都有解决方案，但让单例的实现不够 Pythonic。我们可以重新审视 Python 的语法元素，发现模块采用的其实是天然的单例的实现方式：
 
@@ -549,7 +549,7 @@ Python 中一切皆对象，在新式类中，object 是所有内建类型的基
     In [6]: a.__class__
     Out[6]: __main__.TestNewClass
     
-新式类支持 property 和描述符特性，作为新式类的祖先，Object 类还定义了一些特殊方法：__new__()、__init__()、__delattr__()、__getattribute__()、__setattr__()、__hash__()、__repr__()、__str__()等。
+新式类支持 property 和描述符特性，作为新式类的祖先，Object 类还定义了一些特殊方法： __ new __ ()、 __ init __ ()、 __ delattr __ ()、 __ getattribute __ ()、 __ setattr __ ()、 __ hash __ ()、 __ repr __ ()、 __ str __ ()等。
 
 ### 建议 55：__init__()不是构造方法
 
@@ -582,7 +582,7 @@ Python 中一切皆对象，在新式类中，object 是所有内建类型的基
         instance = object.__new__(cls, *args, **kw)
     TypeError: object() takes no parameters
     
-从结果中我们可以看出，程序输出了__new__()调用所产生的输出，并抛出了异常。于是我们知道，原来__new__()才是真正创建实例，是类的构造方法，而__init__()是在类的对象创建好之后进行变量的初始化。上面程序抛出异常是因为在__new__()中没有显式返回对象，a1此时为None，当去访问实例属性时就抛出了异常。
+从结果中我们可以看出，程序输出了 __ new __ ()调用所产生的输出，并抛出了异常。于是我们知道，原来 __ new __ ()才是真正创建实例，是类的构造方法，而 __ init __ ()是在类的对象创建好之后进行变量的初始化。上面程序抛出异常是因为在 __ new __ ()中没有显式返回对象，a1此时为None，当去访问实例属性时就抛出了异常。
 
 根据官方文档，我们可以总结以下几点：
 
@@ -590,21 +590,21 @@ Python 中一切皆对象，在新式类中，object 是所有内建类型的基
 
 2.object.__init__(self[, args...])：其中 self 代表实例对象，args 为参数列表，为实例方法
 
-3.控制实例创建的时候可使用 __new__() ，而控制实例初始化的时候使用 __init__()
+3.控制实例创建的时候可使用 __ new __ () ，而控制实例初始化的时候使用 __ init __ ()
 
-4.__new__()需要返回类的对象，当返回类的对象时将会自动调用__init__()进行初始化，没有对象返回，则__init__()不会被调用。__init__() 方法不需要显示返回，默认为 None，否则会在运行时抛出 TypeError
+4.__new __ ()需要返回类的对象，当返回类的对象时将会自动调用 __ init __ ()进行初始化，没有对象返回，则 __ init __ () 不会被调用。 __ init __ () 方法不需要显示返回，默认为 None，否则会在运行时抛出 TypeError
 
 5.但当子类继承自不可变类型，如 str、int、unicode 或者 tuple 的时候，往往需要覆盖__new__()
 
-6.覆盖 __new__() 和 __init__() 的时候这两个方法的参数必须保持一致，如果不一致将导致异常
+6.覆盖 __ new __ () 和 __ init __ () 的时候这两个方法的参数必须保持一致，如果不一致将导致异常
 
-下面我们来总结需要覆盖__new__()的几种特殊情况：
+下面我们来总结需要覆盖 __ new __ ()的几种特殊情况：
 
-1.当类继承不可变类型且默认的 __new__() 方法不能满足需求的时候
+1.当类继承不可变类型且默认的 __ new __ () 方法不能满足需求的时候
 
-2.用来实现工厂模式或者单例模式或者进行元类编程，使用__new__()来控制对象创建
+2.用来实现工厂模式或者单例模式或者进行元类编程，使用 __ new __ ()来控制对象创建
 
-3.作为用来初始化的 __init__() 方法在多继承的情况下，子类的 __init__()方法如果不显式调用父类的 __init__() 方法，则父类的 __init__() 方法不会被调用；通过super(子类， self).__init__()显式调用父类的初始化方法；对于多继承的情况，我们可以通过迭代子类的 __bases__ 属性中的内容来逐一调用父类的初始化方法
+3.作为用来初始化的 __ init __ () 方法在多继承的情况下，子类的 __ init __ ()方法如果不显式调用父类的 __ init __ () 方法，则父类的 __ init __ () 方法不会被调用；通过super(子类， self). __ init __ ()显式调用父类的初始化方法；对于多继承的情况，我们可以通过迭代子类的 __ bases __ 属性中的内容来逐一调用父类的初始化方法
 
 分别来看例子加深理解：
 
@@ -798,7 +798,7 @@ L[C(B1...BN)] = C + merge(L[B1] ... L[BN], B1 ... BN)
     ...:         
 
     In [2]: MyClass.__dict__['my_method']
-Out[2]: <function __main__.MyClass.my_method>
+Out[2]: <function__main__.MyClass.my_method>
 
     In [3]: MyClass.my_method
     Out[3]: <function __main__.MyClass.my_method>
@@ -811,11 +811,12 @@ Out[2]: <function __main__.MyClass.my_method>
     
 根据通过实例访问属性和根据类访问属性的不同，有以下两种情况：
 
-1.一种是通过实例访问，比如代码 obj.x，如果 x 是一个描述符，那么 __getattribute__() 会返回 type(obj).__dict__['x'].__get__(obj, type(obj)) 结果，即：type(obj) 获取 obj 的类型；type(obj).__dict__['x'] 返回的是一个描述符，这里有一个试探和判断的过程；最后调用这个描述符的 __get__() 方法。
+1.一种是通过实例访问，比如代码 obj.x，如果 x 是一个描述符，那么 __ getattribute __ () 会返回 type(obj). __ dict __ ['x']. __ get __ (obj, type(obj)) 结果，即：type(obj) 获取 obj 的类型；type(obj). __ dict __ ['x'] 返回的是一个描述符，这里有一个试探和判断的过程；最后调用这个描述符的 __ get __ () 方法。
 
-2.另一个是通过类访问的情况，比如代码 cls.x，则会被 __getattribute__()转换为 cls.__dict__['x'].__get__(None, cls)。
+2.另一个是通过类访问的情况，比如代码 cls.x，则会被 __ getattribute __ ()转换为 cls. 
+ __ dict __ ['x']. __ get __ (None, cls)。
 
-描述符协议是一个 Duck Typing 的协议，而每一个函数都有 __get__ 方法，也就是说其他每一个函数都是描述符。所有对属性, 方法进行修饰的方案往往都用到了描述符, 如classmethod, staticmethod, property等, 以下是property的参考实现:
+描述符协议是一个 Duck Typing 的协议，而每一个函数都有 __ get __ 方法，也就是说其他每一个函数都是描述符。所有对属性, 方法进行修饰的方案往往都用到了描述符, 如classmethod, staticmethod, property等, 以下是property的参考实现:
 
     class Property(object):
         "Emulate PyProperty_Type() in Objects/  descrobject.c"
@@ -839,7 +840,7 @@ Out[2]: <function __main__.MyClass.my_method>
                 raise AttributeError, "can't delete attribute"
             self.fdel(obj)
             
-### 建议 60：区别__getattr__()和__getattribute__()方法
+### 建议 60：区别 __ getattr __ ()和 __ getattribute __ ()方法
 
 以上两种方法可以对实例属性进行获取和拦截：
 
@@ -847,7 +848,7 @@ Out[2]: <function __main__.MyClass.my_method>
 
 2.__getattribute__(self, name)：对于所有属性的访问都会调用该方法
 
-但访问不存在的实例属性时，会由内部方法__getattribute__()抛出一个 AttributeError 异常，也就是说只要涉及实例属性的访问就会调用该方法，它要么返回实际的值，要么抛出异常。详情[请参考](https://docs.python.org/2/reference/datamodel.html#object.getattribute)。
+但访问不存在的实例属性时，会由内部方法 __ getattribute __()抛出一个 AttributeError 异常，也就是说只要涉及实例属性的访问就会调用该方法，它要么返回实际的值，要么抛出异常。详情[请参考](https://docs.python.org/2/reference/datamodel.html#object.getattribute)。
 
 那么__getattr__()在什么时候调用呢：
 
@@ -855,11 +856,11 @@ Out[2]: <function __main__.MyClass.my_method>
 
 2.属性不在其基类以及祖先类的__dict__中；
 
-3.触发AttributeError异常时（注意，不仅仅是__getattribute__()方法的AttributeError异常，property 中定义的get()方法抛出异常的时候也会调用该方法）。
+3.触发AttributeError异常时（注意，不仅仅是 __ getattribute __ ()方法的AttributeError异常，property 中定义的get()方法抛出异常的时候也会调用该方法）。
 
-当这两个方法同时被定义的时候，要么在__getattribute__()中显式调用，要么触发AttributeError异常，否则__getattr__()永远不会被调用。
+当这两个方法同时被定义的时候，要么在 __ getattribute __ ()中显式调用，要么触发AttributeError异常，否则 __ getattr __ ()永远不会被调用。
 
-我们知道 property 也能控制属性的访问，如果一个类中如果定义了 property、__getattribute__()以及__getattr__()来对属性进行访问控制，会最先搜索__getattribute__()方法，由于 property 对象并不存在于 dict 中，因此并不能返回该方法，此时会搜索 property 中的get()方法；当 property 中的set()方法对属性进行修改并再次访问 property 的get()方法会抛出异常，这时会触发__getattr__()的调用。
+我们知道 property 也能控制属性的访问，如果一个类中如果定义了 property、 __ getattribute __ ()以及 __ getattr __ ()来对属性进行访问控制，会最先搜索 __ getattribute __ ()方法，由于 property 对象并不存在于 dict 中，因此并不能返回该方法，此时会搜索 property 中的get()方法；当 property 中的set()方法对属性进行修改并再次访问 property 的get()方法会抛出异常，这时会触发 __ getattr __ ()的调用。
 
 参考资料：https://zhuanlan.zhihu.com/p/26748481
 
