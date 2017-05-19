@@ -90,8 +90,7 @@ property 有两种常用的形式：
         
 创建一个 property 实际上就是将其属性的访问与特定的函数关联起来，相对于标准属性的访问，property 的作用相当于一个分发器，对某个属性的访问并不直接操作具体的对象，而对标准属性的访问没有中间这一层，直接访问存储属性的对象：
 
-![](/Users/jiaxuchao/Arsenala.github.io/img/python/4-1.jpg
-)
+![](/img/python/4-1.jpg)
 
 3、代码可维护性更好。property 对属性进行再包装，以类似于接口的形式呈现给用户，以统一的语法来访问属性，当具体实现需要改变的时候，访问的方式仍然可以保持一致。
 
@@ -199,8 +198,7 @@ UserProperty 继承自 property，其构造函数 __new__(cls, fget=None, fset=N
 
 3、数值相关的协议：
 
-![](/Users/jiaxuchao/Arsenala.github.io/img/python/4-2.jpg
-)
+![](img/python/4-2.jpg)
 
 其中有个 Python 中特有的概念：反运算。以something + other为例，调用的是something的__add__()，若没有定义__add__()，这时候 Python 有一个反运算的协议，查看other有没有__radd__()，如果有，则以something为参数调用。
 
@@ -623,13 +621,11 @@ greenlet 是一个 C 语言编写的程序库，它与 yield 关键字没有密�
 
 多线程 Python 程序运行的速度比只有一个线程的时候还要慢，除了程序本身的并行性之外，很大程度上与 GIL 有关。由于 GIL 的存在，多线程编程在 Python 中并不理想。GIL 被称为全局解释器锁（Global Interpreter Lock），是 Python 虚拟机上用作互斥线程的一种机制，它的作用是保证任何情况下虚拟机中只会有一个线程被运行，而其他线程都处于等待 GIL 锁被释放的状态。不管是在单核系统还是多核系统中，始终只有一个获得了 GIL 锁的线程在运行，每次遇到 I/O 操作便会进行 GIL 锁的释放。
 
-![](/Users/jiaxuchao/Arsenala.github.io/img/python/4-3.jpg
-)
+![](/img/python/4-3.jpg)
 
 但如果是纯计算的程序，没有I/O操作，解释器则会根据sys.setcheckinterval的设置来自动进行线程间的切换，默认是每隔100个内部时钟就会释放GIL锁从而轮换到其他线程：
 
-![](/Users/jiaxuchao/Arsenala.github.io/img/python/4-4.jpg
-)
+![](/img/python/4-4.jpg)
 
 在单核 CPU 中，GIL 对多线程的执行并没有太大影响，因为单核上的多线程本质上就是顺序执行的。但对于多核 CPU，多线程并不能真正发挥优势带来效率上明显的提升，甚至在频繁 I/O 操作的情况下由于存在需要多次释放和申请 GIL 的情形，效率反而会下降。
 
@@ -641,8 +637,7 @@ greenlet 是一个 C 语言编写的程序库，它与 yield 关键字没有密�
 
 2.判断该计数值是否为 0，如果为0，则销毁该对象
 
-![](/Users/jiaxuchao/Arsenala.github.io/img/python/4-5.jpg
-)
+![](/img/python/4-5.jpg)
 
 鉴于此，Python 引入了 GIL，以保证对虚拟机内部共享资源访问的互斥性。
 
