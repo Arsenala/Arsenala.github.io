@@ -1,0 +1,492 @@
+---
+layout:     post
+title:      "改善 Python 程序的 91 个建议（五）"
+subtitle:   "Python"
+date:       2017-05-21 00:00:00
+author:     "yufengzhe"
+header-img: "img/post-bg-python.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - Python
+    - Python 入门
+    - Python 教程
+---
+
+### 建议 74：为包编写单元测试
+
+直接上一个实例：
+
+    __author__  = 'Windrivder'
+
+    import unittest
+
+    from app import create_app, db
+    from flask import current_app
+
+
+    class BasicsTestCase(unittest.TestCase):
+
+        def setUp(self):    # 测试前运行
+            self.app = create_app('testing')
+            self.app_context = self.app.app_context()
+            self.app_context.push()
+            db.create_all()  # 创建全新的数据库
+
+        def tearDown(self):  # 测试后运行
+            db.session.remove()
+            db.drop_all()   # 删除数据库
+            self.app_context.pop()
+
+        # 测试程序实例是否存在
+        def test_app_exists(self):
+            self.assertFalse(current_app is None)
+
+        # 测试程序能在测试配置中运行
+        def test_app_is_testing(self):
+            self.assertTrue(current_app.config['TESTING'])
+            
+            
+    __author__ = 'Windrivder'
+
+        import time
+        import unittest
+        from datetime import datetime
+
+    from app import create_app, db
+    from app.models import AnonymousUser, Follow, Permission, Role, User
+
+
+    class UserModelTestCase(unittest.TestCase):
+
+        def test_password_setter(self):
+            u = User(password='Cat')
+            self.assertTrue(u.password_hash is not None)
+
+        def test_no_password_getter(self):
+            u = User(password='Cat')
+            with self.assertRaises(AttributeError):
+                u.password
+
+        def test_password_verifycation(self):
+            u = User(password='Cat')
+            self.assertTrue(u.verify_password('Cat'))
+            self.assertFalse(u.verify_password('Dog'))
+
+        def test_password_salts_are_random(self):
+            u = User(password='Cat')
+            u2 = User(password='Cat')
+            self.assertTrue(u.password_hash != u2.password_hash)
+
+        def test_roles_and_permission(self):
+            Role.insert_roles()
+            u = User(email='john@example.com', password='cat')
+            self.assertTrue(u.can(Permission.WRITE_ARTICLES))
+            self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
+
+        def test_anonymous_user(self):
+            u = AnonymousUser()
+            self.assertFalse(u.can(Permission.FOLLOW))
+
+        def test_timestamps(self):
+            u = User(password='cat')
+            db.session.add(u)
+            db.session.commit()
+            self.assertTrue(
+                (datetime.utcnow() - u.member_since).total_seconds() < 3)
+            self.assertTrue(
+                (datetime.utcnow() - u.last_seen).total_seconds() < 3)
+
+        def test_ping(self):
+            u = User(password='cat')
+            db.session.add(u)
+            db.session.commit()
+            time.sleep(2)
+            last_seen_before = u.last_seen
+            u.ping()
+            self.assertTrue(u.last_seen > last_seen_before)
+            
+以上代码是在学习 Flask 框架时，在书中学习到的单元测试。
+
+### 建议 75：利用测试驱动开发提高代码的可测性
+
+测试驱动开发（Test Driven Development，TDD）是敏捷开发中一个非常重要的理念，它提倡在真正开始编码之前测试先行，先编写测试代码，再在其基础上通过基本迭代完成编码，并不断完善。一般来说，遵循以下过程：
+
+1.编写部分测试用例，并运行测试
+
+2.如果测试通过，则回到测试用例编写的步骤，继续添加新的测试用例
+
+3.如果测试失败，则修改代码直到通过测试
+
+4.当所有测试用例编写完成并通过测试之后，再来考虑对代码进行重构
+
+关于测试驱动开发和提高代码可测性方面有几点需要说明：
+
+1.TDD 只是手段而不是目的，因此在实践中尽量只验证正确的事情，并且每次仅仅验证一件事。当遇到问题时不要局限于 TDD 本身所涉及的一些概念，而应该回头想想采用 TDD 原本的出发点和目的是什么
+
+2.测试驱动开发本身就是一门学问
+
+3.代码的不可测性可以从以下几个方面考量：实践 TDD 困难；外部依赖太多；需要写很多模拟代码才能完成测试；职责太多导致功能模糊；内部状态过多且没有办法去操作和维护这些状态；函数没有明显返回或者参数过多；低内聚高耦合等等。
+
+### 建议 76：使用 Pylint 检查代码风格
+
+如果团队遵循 PEP8 编码风格，Pylint 是个不错的选择（还有其他选择，比如 pychecker、pep8 等）。Pylint 始于 2003 年，是一个代码分析工具，用于检查 Python 代码中的错误，查找不符合代码编码规范以及潜在的问题。支持不同的 OS 平台，如 Windows、Linux、OSX 等，特性如下：
+
+1.代码风格审查。它以 Guido van Rossum 的 PEP8 为标准，能够检查代码的行长度，不符合规范的变量名以及不恰当的模块导入等不符合编码规范的代码
+
+2.代码错误检查。如未被实现的接口，方法缺少对应参数，访问模块中未定义的变量等
+
+3.发现重复以及设计不合理的代码，帮助重构。
+
+4.高度的可配置化和可定制化，通过 pylintrc 文件的修改可以定义自己适合的规范。
+
+5.支持各种 IDE 和编辑器集成。如 Emacs、Eclipse、WingIDE、VIM、Spyder 等
+
+6.能够基于 Python 代码生成 UML 图。Pylint0.15 中就集成了 Pyreverse，能够轻易生成 UML 图形
+
+7.能够与 Hudson、Jenkins 等持续集成工具相结合支持自动代码审查。
+
+使用 Pylint 分析代码，输出分为两部分：一部分为源代码分析结果，第二部分为统计报告。报告部分主要是一些统计信息，总体来说有以下6 类：
+
+1.Statistics by type：检查的模块、函数、类等数量，以及它们中存在文档注释以及不良命名的比例
+
+2.Raw metrics：代码、注释、文档、空行等占模块代码量的百分比统计
+
+3.Duplication：重复代码的统计百分比
+
+4.Messages by category：按照消息类别分类统计的信息以及和上一次运行结果的对比
+
+5.Messages：具体的消息 ID 以及它们出现的次数
+
+6.Global evaluation：根据公式计算出的分数统计：10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
+
+我们来重点讨论一下源代码分析主要以消息的形式显示代码中存在的问题，消息以 MESSAGE_TYPE:LINE_NUM:[OBJECT:]MESSAGE 的形式输出，主要分为以下 5 类：
+
+1.（C）惯例，违反了编码风格标准
+
+2.（R）重构，写得非常糟糕的代码
+
+3.（W）警告，某些 Python 特定的问题
+
+4.（E）错误，很可能是代码中的 bug
+
+5.（F）致命错误，阻止 Pylint 进一步运行的错误
+
+比如如果信息输出 trailing-whitespace 信息，可以使用命令 pylint --help-msg="trailing-whitespace" 来查看，这里提示是行尾存在空格。
+
+如果不希望对这类代码风格进行检查，可以使用命令行过滤掉这些类别的信息，比如 pylint -d C0303,W0312 BalancePoint.py。
+
+Pylint 支持可配置化，如果在项目中希望使用统一的代码规范而不是默认的风格来进行代码检查，可以指定 --generate-rcfile 来生成配置文件。默认的 Pylintrc 可以在 Pylint 的目录 examples 中找到。如默认支持的变量名的正则表达式为：variable-rgx=[a-z_][a-z0-9_]{2,30}$，可以根据自己需要进行相应修改。其他配置如 reports 用于控制是否输出统计报告；max-module-lines 用于设置模块最大代码行数；max-line-length 用于设置代码行最大长度；max-args 用于设置函数的参数个数等。读者可自行查看 pylintrc 文件。
+
+### 建议 77：进行高效的代码审查
+
+### 建议 78：将包发布到 PyPI
+
+可以是发布到官方的 PyPI 或者团队私有的 PyPI。这里先讲把包发布到官方的 PyPI，标准库 distutils 支持将包发布到 PyPI 的功能：
+
+    # 现在 PyPI 上注册一个用户
+    $ python setup.py register
+    # 注册包名
+    $ python setup.py register -n 
+    # 上传包
+    $ python setup.py sdist upload
+    
+# 第 8 章 性能剖析与优化
+
+### 建议 79：了解代码优化的基本原则
+
+代码优化是指在不改变程序运行结果的前提下使得程序运行的效率更高，优化的代码意味着代运行速度更快或者占用的资源更少。
+
+1.优先保证代码是可工作的。
+
+2.权衡优化的代价。
+
+3.定义性能指标，集中力量解决首要问题。
+
+4.不要忽略可读性。
+
+### 建议 80：借助性能优化工具
+
+常见的性能优化工具有 Psyco、Pypy 和 cPython 等。
+
+1.Psyco：Psyco 是一个 just-in-time 的编译器，它能够在不改变源代码的情况下提高一定的性能，Psyco 将操作编译成部分优化的机器码，其操作分成三个不同的级别，有“运行时”、“编译时”和“虚拟时”变量，并根据需要提高和降低变量的级别。运行时变量只是常规 Python 解释器处理的原始字节码和对象结构。一旦 Psyco 将操作编译成机器码，那么编译时变量就会在机器寄存器和可直接访问的内存位置中表示。同时 Python 能高速缓存已编译的机器码以备以后重用，这样能节省一点时间。但 Psyco 也有其缺点，其本身所占内存较大。2012 年 Psyco 项目停止维护并正式结束，由 Pypy 所接替。
+
+2.Pypy：Python 的动态编译器，是 Psyco 的后继项目。其目的是，做到 Psyco 没有做到的动态编译。Pypy 的实现分为两部分，第一部分“用 Python 实现的 Python”，实际上它是使用一个名为 RPython 的 Python 子集实现的，Pypy 能够将 Python 代码转成 C、.NET、Java 等语言和平台的代码；第二部分 Pypy 集成了一种编译 rPython 的即时（JIT）编译器，和许多编译器、解释器不同，这种编译器不关心 Python 代码的词法分析和语法树，所以它直接利用 Python 语言的 Code Object（Python 字节码的表示）。Pypy 直接分析 Python 代码所对应的字节码，这些字节码既不是以字符形式也不是以某种二进制格式保存在文件中。
+
+### 建议 81：利用 cProfile 定位性能瓶颈
+
+程序性能影响往往符合 80/20 法则，即 20% 的代码的运行时间占用了 80% 的总运行时间。
+
+profile 是 Python 的标准库，可以统计程序里每一个函数的运行时间，并且提供了多样化的报表，而 cProfile 则是它的 C 实现版本，剖析过程本身需要消耗的资源更少。所以在 Python3 中，cProfile 代替了 profile，成为默认的性能剖析模块。
+
+    def foo():
+        sum = 0
+        for i in range(100):
+            sum += i
+        return sum
+    if __name__ == "__main__":
+        import cProfile
+        cProfile.run("foo()")
+    4 function calls in 0.000 seconds
+
+    Ordered by: standard name
+
+    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.000    0.000 <ipython-input-1-e5d41600b11d>:1(foo)
+        1    0.000    0.000    0.000    0.000 <string>:1(<module>)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.exec}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        
+除了用这种方式，cProfile 还可以直接用 Python 解释器调用 cProfile 模块来剖析 Python 程序，如在命令行输入 python -m cProfile prof1.py结果和调用cProfile.run()一样。
+
+cProfile 的统计结果分为 ncalls、tottime、percall、cumtime、percall、filename:lineno(function) 等若干列。
+
+统计项意义ncalls函数的被调用次数tottime函数总计运行时间，不含调用的函数运行时间percall函数运行一次的平均时间，等于 tottime/ncallscumtime函数总计运行时间，含调用的函数运行时间percall函数运行一次的平均时间，等于 cumtime/ncallsfilename:lineno(function)函数所在的文件名、函数的行号、函数名
+通常情况下，cProfile 的输出都直接输出到命令行，而且默认是按照文件名排序输出的。cProfile 简单地支持了一些需求，可以在 cProfile.run() 函数里再提供一个实参，就是保存输出的文件名。同样，在命令行参数里，也可以加多一个参数，用来保存 cProfile 的输出。
+
+cProfile 解决了我们的对程序执行性能剖析的需求，但还有一个需求：以多种形式查看报表以便快速定位瓶颈。我们可以通过 pstats 模块的另一个类 Stats 来解决。Stats 的构造函数接受一个参数——就是 cProfile 的输出文件名。Status 提供了对 cProfile 输出结果进行排序、输出控制等功能。我们可以修改前文的程序：
+
+    if __name__ == "__main__":
+        import cProfile
+        cProfile.run("foo()", "prof.txt")
+        import pstats
+        p = pstats.Stats("prof.txt")
+        p.sort_stats("time").print_stats()
+        
+Stats 有若干个函数，这些函数组合能输出不同的 cProfile 报表，功能非常强大，下面简单介绍一些：
+
+函数函数的作用strip_dirs()用以除去文件名前面的路径信息add(filename,[...])把 profile 的输出文件加入 Stats 实例中统计dump_stats(filename)把 Stats 的统计结果保存到文件sort_stats(key, [...])把最重要的一个函数，用以排序 profile 的输出reverse_order()把 Stats 实例里的数据反序重排print_stats([restriction,...])把 Stats 报表输出到 stdoutprint_callers([restriction,...])输出调用了指定的函数的相关信息print_callees([restriction,...])输出指定的函数调用过的函数的相关信息
+这里最重要的函数就是 sort_stats 和 print_stats，通过这两个函数我们几乎可以用适当的形式浏览所有的信息了。下面是详细介绍：
+
+1.sort_stats() 接收一个或者多个字符串参数，如 time、name 等，表明要根据哪一列来排序。比如可以通过用 time 为 key 来排序得知最消耗时间的函数；也可以通过 cumtime 来排序，获知总消耗时间最多的函数。
+
+2.参数意义ncalls被调用次数cumulative函数运行的总时间file文件名module模块名pcalls简单统计调用line行号name函数名nflName、file、linestdname标准函数名time函数内部运行时间
+print_stats 输出最后一次调用 sort_stats 之后得到的报表。print_stats 有多个可选参数，用以筛选输出的数据。print_stats 的参数可以是数字也可以是 Perl 风格的正则表达式。
+
+下面举一些例子：
+
+    # 将 stats 里的内容取前面 10%，然后再将包含 "foo:" 这个字符串的结果输出
+    print_stats(".1", "foo:")
+    # 将 stats 里的包含 "foo:" 字符串的内容的前 10% 输出
+    print_stats("foo:", ".1")
+    # 将 stats 里前 10 条数据输出
+    print_stats(10)
+    # profile 输出结果的时候相当于如下调用了 Stats 的函数
+    p.strip_dirs().sort_stats(-1).print_stats()
+    
+其中，sort_stats 函数的参数是 -1，这是为了与旧版本兼容而保留的。sort_stats 可以接受 -1、0、1、2 之一，这 4 个数分贝对应 "stdname"、"calls"、"time" 和 "cumulative"。但如果你使用了数字为参数，那么 pstats 只按照第一个参数进行排序，其他参数将被忽略。
+
+除了编程接口外，pstats 还提供了友好的命令行交互环境，在命令行执行 python -m pstats 就可以进入交互环境，在交互环境里可以使用 read 或 add 指令读入或加载剖析结果文件， stats 指令用以查看报表，callees 和 callers 指令用以查看特定函数的被调用者和调用者。
+
+如果我们想测试向 list 中添加一个元素需要多少时间，可以使用 timeit 模块：
+
+    class Timer([stmt="pass"[, setup="pass"[, timer=<time function>]]])
+    
+1.stmt 参数是字符串形式的一个代码段，这个代码段将被评测运行时间；
+
+2.setup 参数用以设置 stmt 的运行环境；
+
+3.timer 可以由用户使用自定义精度的计时函数。
+
+timeit.Timer 有 3 个成员函数：
+
+1.timeit([number=1000000]) ：timeit() 执行一次 Timer 构造函数中的 setup 语句之后，就重复执行 number 次 stmt 语句，然后返回总计运行消耗的时间；
+
+2.repeat([repeat=3[, number=1000000]]) ：repeat() 函数以 number 为参数调用 timeit 函数 repeat 次，并返回总计运行消耗的时间；
+
+3.print_exc([file=None]) ：print_exec() 函数以代替标准的 tracback，原因在于 print_exec() 会输出错行的源代码。
+
+除了可以使用 timeit 的编程接口外，也可以在命令行里使用 timeit，非常方便：
+
+    python -m timeit [-n N] [-r N] [-s S] [-t] [-c] [-h] [statement ...]
+    
+其中参数的定义如下：
+
+1.-n N/--number=N，statement 语句执行的次数
+
+2.-r N/--repeat=N，重复多少次调用 timeit()，默认为 3
+
+3.-s S/--setup=S，用以设置 statement 执行环境的语句，默认为 "pass"
+
+4.-t/--time，计时函数，除了 Windows 平台外默认使用 time.time() 函数
+
+5.-c/--clock，计时函数，Windows 平台默认使用 time.clock() 函数
+
+6.-v/--verbose，输出更大精度的计时数值
+
+7.-h/--help，简单的使用帮助
+
+厉害：
+
+    python -m timeit "[].append(1)"
+    10000000 loops, best of 3: 0.116 usec per loop
+    
+### 建议 82：使用 memory_profiler 和 objgraph 剖析内存使用
+
+Python 还提供了一些工具可以用来查看内存的使用情况以及追踪内存泄漏（如 memory_profiler、objgraph、cProfile、PySizer 及 Heapy 等），或者可视化地显示对象之间的引用（如 objgraph），从而为发现内存问题提供更直接的证据。我们来看看memory_profiler、objgraph两个工具的使用。
+
+1.memory_profiler：在需要进行内存分析的代码之前用 @profile 进行装饰，然后运行命令 python -m memory_profiler 文件名 ，便可以输出每一行代码的内存使用以及增长情况。
+
+2.Objgraph：
+
+2.1安装：pip install objgraph
+
+2.2功能分类：
+
+2.2.1统计，如 objgraph.count(typename[, objects]) 表示根据传入的参数显示被 gc 跟踪的对象的数目；objgraph.show_most_common_types([limit=10, objects]) 表示显示常用类型对应的对象的数目
+
+2.2.2定位和过滤对象，如 objgraph.by_type(typename[, objects]) 表示根据传入的参数显示被 gc 跟踪的对象信息；objgraph.at(addr) 表示根据给定的地址返回对象
+
+2.2.3遍历和显示对象图。如 objgraph.show_refs(objs[, max_depth=3, extra_ignore=(), filter=None, too_many=10, highlight=None, filename=None, extra_info=None, refcounts=False]) 表示从对象 objs 开始显示对象引用关系图；objgraph.show_backrefs(objs[, max_depth=3, extra_ignore=(), filter=None, too_many=10, highlight=None, filename=None, extra_info=None, refcounts=False]) 表示显示以 objs 的引用作为结束的对象关系图。
+
+2.3例子：
+
+2.3.1生成对象x的引用关系图：
+
+    >>> import objgraph
+    >>> x = ['a', '1', [2, 3]]
+    >>> objgraph.show_refs([x], filename="test.png")
+    
+2.3.2显示常用类型不同类型对象的数目，限制输出前3行：
+
+    >>> objgraph.show_most_common_types(limit=3)
+    wrapper_descriptor            1031
+    function                    975
+    builtin_function_or_method    615
+    
+### 建议 83：努力降低算法复杂度
+
+时间复杂度：
+
+O(1) < O(log * n) < O(n) < O(n log n) < O(n^2) < O(c^n) < O(n!) < O(n^n)
+
+常见数据结构基本操作时间复杂度：
+
+![](/img/python/5-1.jpg)
+
+### 建议 84：掌握循环优化的基本技巧
+
+循环的优化应遵循的原则是尽量减少循环过程中的计算量，多重循环的情形下尽量将内层的计算提到上一层。
+
+1.减少循环内部的计算：
+
+    # 每次循环都要重新计算
+    for i in range(iter):
+        d = math.sqrt(y)
+        j += i * d
+    # 高效率
+    d = math.sqrt(y)
+    for i in range(iter):
+        j += i * d
+        
+2.将显式循环改为隐式循环：n * (n + 1) / 2，不必使用for循环计算，但要注意可读性
+
+3.在循环中尽量引用局部变量，在命名空间中局部变量优先搜索，因此局部变量的查询会比全局变量要快，当在循环中需要多次引用某一个变量的时候，尽量将其转换为局部变量：
+
+    # 示例一
+    x = [10, 34, 56, 78]
+    def f(x):
+        for i in range(len(x)):
+            x[i] = math.sin(x[i])
+        return x
+    # 示例二
+    def g(x):
+        loc_sin = math.sin
+        for i in range(len(x)):
+            x[i] = loc_sin(x[i])
+        return x
+    # 示例二比示例一性能更佳
+    
+4.关注内层嵌套循环，尽量将内层循环的计算往上层移：
+
+    # 示例一
+    for i in range(len(v1)):
+        for j in range(len(v2)):
+            x = v1[i] + v2[j]
+
+    # 示例二
+    for i in range(len(v1)):
+        v1i = v1[i]
+        for j in range(len(v2)):
+            x = v1i + v2[j]
+            
+### 建议 85：使用生成器提高效率
+
+放一张图来理解，来自[这里](http://nvie.com/posts/iterators-vs-generators/)
+
+![](/img/python/5-2.png)
+
+实际上当需要在循环过程中依次处理一个序列中的元素的时候，就应该考虑生成器。
+
+当解释器执行遇到 yield 的时候，函数会自动返回 yield 语句之后的表达式的值。不过与 return 不同的是，yield 语句在返回的同时会保存所有的局部变量以及现场信息，以便在迭代器调用 next() 或 send() 方法的时候还原，而不是直接交给垃圾回收器（return() 方法返回后这些信息会被垃圾回收器处理）。
+
+这样就能够保证对生成器的每一次迭代都会返回一个元素，而不是一次性在内存中生成所有的元素。自 Python2.5 开始，yield 语句变为表达式，可以直接将其值赋给其他变量。
+
+生成器的优点总体来说有如下几条：
+
+1.生成器提供了一种更为便利的产生迭代器的方式，用户一般不需要自己实现 __ iter __ 和 next 方法，它默认返回一个迭代器
+
+2.代码更为简洁优雅
+
+3.充分利用了延迟评估（Lazy evaluation）的特性，仅在需要的时候才产生对应的元素，而不是一次生成所有的元素，从而节省了内存空间，提高了效率，理论上无限循环成为了可能
+
+4.使得协同程序更为容易实现。协同程序是有多个进入点，可以挂起恢复的函数，这基本就是 yield 的工作方式。Python2.5 之后生成器的功能更完善，加入了 send()、close() 和 throw() 方法。其中 send() 不仅可以传递值给 yield 语句，而且能够恢复生成器，因此生成器能大大简化协同程序的实现。
+
+### 建议 86：使用不同的数据结构优化性能
+
+如果 Python 中的查找、排序算法已经优化到极限，比如sort()使用 key 参数比使用cmp参数性能更高；那么首先应该考虑使用不同的数据结构优化性能。
+
+list，它的内存管理类似 C++ 的 std::vector，即预先分配一定数量的”车位“，当预分配的内存用完时，又继续往里面插入元素，会启动新一轮的内存分配。
+
+list 对象会根据内存增长算法申请一块更大的内存，然后将原有的所有元素拷贝过去，销毁之前的内存，再插入新元素。当删除元素时，也是类似，删除后发现已用空间比预分配空间的一半还少时，list 会另外申请一块小内存，再做一次元素拷贝，然后销毁原有的大内存。可见，如果 list 对象经常有元素数量的“巨变”，比如增加、删除得很频繁，那么应当考虑使用 deque。
+
+deque 就是双端队列，同时具备栈和队列的特性，能够提供在两端插入和删除时复杂度为 O(1) 的操作。相对于 list，它最大的优势在于内存管理方面。如果不熟悉 C++ 的 std::deque，可以把 deque 想象为多个 list 连在一起，它的每一个 list 也可以存储多个元素。它的优势在于插入时，已有空间已经用完，那么它会申请一个新的内存空间来容纳新的元素，并将其与已有的其他内存空间串接起来，从而避免元素拷贝；在删除元素时也类似，无需移动元素。所以当元素数量巨变时，它的性能比 list 要好上许多倍。
+
+对于 list 这种序列容器来说，除了 pop(0) 和 insert(0, v) 这种插入操作非常耗时之外，查找一元素是否在其中，也是 O(n) 的线性复杂度。在 C 语言中，标准库函数 bsearch() 能够通过二分查找算法在有序队列中快速查找是否存在某一元素。在 Python 中，对保持 list 对象有序以及在有序队列中查找元素有非常好的支持，这是通过标准库 bisect 来实现的。
+
+bisect 并没有实现一种新的“数据结构”，其实它是用来维护“有序列表”的一组函数，可以兼容所有能够随机存取的序列容器，比如 list。它可使在有序列表中查找某一元素变得非常简单。
+
+    def index(a, x):
+        i = bisect_left(a, x)
+        if i != len(a) and a[i] == x:
+            return i
+        raise ValueError
+        
+保持列表有序需要付出额外的维护工作，但如果业务需要在元素较多的列表中频繁查找某些元素是否存在或者需要频繁地有序访问这些元素，使用 bisect 则相当值得。
+
+对于序列容器，除了插入、删除、查找之外，还有一种很常见的需求是获取其中的极大值或极小值元素，比如在查找最短路径的A*算法中就需要在Open表中快速找到预估值最小的元素。这时候，可以使用 heapq 模块。类似 bisect，heapq 也是维护列表的一组函数，其中 heapify() 的作用是把一个序列容器转化为一个堆。
+
+    In [1]: import heapq
+
+    In [2]: import random
+
+    In [3]: alist = [random.randint(0, 100) for i in range(10)]
+
+    In [4]: alist
+    Out[4]: [62, 72, 18, 55, 86, 26, 88, 21, 4, 97]
+
+    In [5]: heapq.heapify(alist)
+
+    In [6]: alist
+    Out[6]: [4, 21, 18, 55, 86, 26, 88, 72, 62, 97]
+    
+可以看到，转化为堆后，alist 的第一个元素 alist[0] 是整个列表中最小的元素，heapq 将保证这一点，从而保证从列表中获取最小值元素的时间复杂度是 O(1)。
+
+    In [7]: heapq.heappop(alist)
+    Out[7]: 4
+
+    In [8]: alist
+    Out[8]: [18, 21, 26, 55, 86, 97, 88, 72, 62]
+    
+除了通过 heapify() 函数将一个列表转换为堆之外，也可以通过 heappush()、heappop() 函数插入、删除元素，针对常见的先插入新元素再获取最小元素、先获取最小元素再插入新元素的需求，还有 heappushpop(heap, item) 和 heapreplace(heap, item) 函数可以快速完成。另外可以看出，每次元素增减之后的序列变化很大，所以千万不要乱用 heapq，以免带来性能问题。
+
+heapq 还有 3 个通用函数值得介绍，其中 merge() 能够把多个有序列表归并为一个有序列表（返回迭代器，不占用内存），而 nlargest() 和 nsmallest() 类似于 C++ 中的 std::nth_element()，能够返回无序列表中最大或最小的 n 个元素，并且性能比 sorted(iterable, key=key)[:n] 要高。
+
+除了对容器的操作可能会出现性能问题外，容器中存储的元素也有很大的优化空间，这是因为在很多业务中，容器存储的元素往往是同一类型的，比如都是整数，而且整数的取值范围也确定，此时就可以用 array 优化程序性能。
+
+array 实例化的时候需要指定其存储的元素类型，如c，表示存储的每个人元素都相当于C语言中的 char 类型，占用内存大小为 1 字节。
+
+参考资料：https://zhuanlan.zhihu.com/p/26761721
+
+
+
