@@ -427,6 +427,5 @@ Cython 使用 cdef extern from 语法，将 math.h 这个 C 语言库头文件�
 
 除了使用 Cython 编写扩展模块提升性能之外，Cython 也可以用来把之前编写的 C/C++ 代码封装成 .so 模块给 Python 调用（类似 boost.python/SWIG 的功能），Cython 社区已经开发了许多自动化工具。
 
-参考资料：https://zhuanlan.zhihu.com/p/26761842
 
 
