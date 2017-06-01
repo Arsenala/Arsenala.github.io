@@ -1,0 +1,99 @@
+---
+layout:     post
+title:      "每天一个前端知识（4）:CSSlayout简介"
+subtitle:   "frontend"
+date:       2017-05-29 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 元素与盒
+
+在HTML中常常使用的概念是元素，而在CSS中，布局的基本单位是盒，盒总是矩形的。
+
+元素与盒并非一一对应的关系，一个元素可能生成多个盒，CSS规则中的伪元素也可能生成盒，display属性为none的元素则不生成盒。
+
+除了元素之外，HTML中的文本节点也可能会生成盒。
+
+### 盒模型
+
+一个盒包括了内容(content)、边框(border)、内边距(padding)、外边距(margin)。下图展示了盒模型的直观意义：
+
+盒的尺寸（width与height）定义受到box-sizing属性的影响。box-sizing可选择content-box(默认), padding-box和border-box三种模式。
+
+### 正常流
+
+正常流是页面，大部分盒排布于正常流中。正常流中的盒必定位于某一格式化上下文中，正常流中有两种格式化上下文：块级格式化上下文（block formatting context，简称BFC）和行内格式化上下文（inline formatting context,IFC）。
+
+在块级格式化上下文中，盒呈纵向排布，在行内格式化上下文中，盒则呈横向排布。
+
+正常流根容器中是块级格式化上下文，不同的盒可能会在内部产生行内格式化上下文或者块级格式化上下文。
+
+### 块级与行内级
+
+正常流中的盒分为块级与行内级两种，任何一个行内级盒都不能够直接被放入块级格式化上下文中。如果有一个HTML元素生成了一个行内盒，而其所在的上下文是块级的话，那么应当为它生成一个匿名块级盒，匿名块级盒会在内部生成行内格式化上下文。
+
+元素的display属性会决定盒是行内级还是块级：
+
+block, table, flex, grid, list-item 为块级
+inline, inline-block, inline-table, inline-flex, inline-grid 为行内级
+
+### 格式化上下文
+
+display同时还可能决定元素内部如何显示，一些容器型元素生成的盒会产生BFC和IFC以外的格式化上下文。
+
+有一类盒被称为块容器，它们能够包含块级盒。块容器要么创建块级格式化上下文，这样它内部仅仅包含块级盒，要么创建一个行内格式化上下文，这样它内部仅仅包含行内级元素。（也就是说，块容器中不可能既包含块级盒，又包含行内级盒，一旦他的子盒中有块级盒，所有行内级盒都会被自动创建匿名盒包裹）。
+
+在非块级格式化上下文中的块容器总是会创建新的块级格式化上下文：如display为inline-blocks, table-cells, 和table-captions所生成的盒。而自身也在块级格式化上下文中的块容器，则只有overflow不为visible的情形下才会创建新的块级格式化上下文。
+
+绝对定位和浮动的块容器则总是会创建新的块级格式化上下文。
+
+display值为table或者inline-table的元素将会生成表格（table），表格内部会使用特殊的格式化方式来排布其内部元素。
+
+display值为grid或者inline-grid的元素将会生成格元素（grid element），与table情形类似，它内部也是使用特殊的格式化方式来牌不其内部元素，
+
+display值为flex或者inline-flex的元素将会生成自适应容器（flex container），自适应容器在其内部产生自适应格式化上下文（flex formatting context）。
+
+之前给大家介绍两种浮动闭合的办法CSS清除浮动 万能float闭合，得知很多同学都在使用下面的骨灰级解决办法：
+
+    .clear{clear:both;height:0;overflow:hidden;}
+    
+上诉办法是在需要清除浮动的地方加个div.clear或者br.clear，我们知道这样能解决基本清浮动问题。
+
+但是这种方法的最大缺陷就是改变了html结构，虽然只是加个div。
+
+### 最优浮动闭合方案（这是我们推荐的）
+
+    .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+    .clearfix{*+height:1%;}
+    
+用法很简单，在浮动元素的父云素上添加class=”demo clearfix”。
+
+你会发现这个办法也有个弊端，但的确是小问题。改变css写法就ok了：
+
+    .demo:after,.demo2:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+    .demo,.demo2{*+height:1%;}
+    
+以上写法就避免了改变html结构，直接用css解决了。
+
+### 很拉轰的浮动闭合办法
+
+    .clearfix{overflow:auto;_height:1%}
+    
+这种办法是我看国外的一篇文章得到的方案，测试了，百试不爽，真的很简单，很给力。喜欢的同学也可以试试这个办法。
+
+    .clearfix{overflow:hidden;_zoom:1;}
+    
+参考资料：https://lee134134134.github.io/page/10/
+
+
+
+
+
+
