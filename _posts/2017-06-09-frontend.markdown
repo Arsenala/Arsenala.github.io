@@ -1,0 +1,148 @@
+---
+layout:     post
+title:      "每天一个前端知识（15）:javascript之美（1）"
+subtitle:   "frontend"
+date:       2017-06-09 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 0
+
+0 是个 Number。在 JS 中，没有 int 和 float 之分，数值类型只有一个，就是 Number。这个 Number 呢，也不是可以表现无限大的，它有范围。在内部实现上，每个 Number 貌似是存在一个 52 bits 的空间里，我记不太清。
+
+所以在 JS 中，Math.pow(2, 53) == Math.pow(2, 53) + 1 是返回 true 的。
+
+多数场景下，不需要考虑精度的问题。但一旦碰上，蛋都要碎。比如 0.1 + 0.2 === 0.3 是 false。
+
+### String
+
+JS 是个搞 Web 开发的，很多时候它不必接触太复杂的数据结构或是算法，而是花很多的时间在与各种 String 打交道。这个 String 有可能是 JSON string，也可能是 HTTP Form string，也可能就是 HTTP 协议本身。每个 String 通过不同的骨架表现着不同的意义，而 JS 也相应地通过不同的刀法来解析这些意义。
+
+在 JS 中，String 是不可变的。
+
+忘了说，Number 也是不可变的。
+
+大可放心地随意传递它们。
+
+### Hash-style Object
+
+Hash-style Object 这个词是我临时想到的，之前我貌似也没在别的地方见过这种说法。
+
+之所以发明了这个词，是因为现在有着越来越多的语言声称自己“一切皆对象”了。在 JS 中，很多时候，很多数据是 instanceof Object 的，包括任意一个 Function。而我只是想表述 Object 被用来当做其他语言中 Hash 的用法的那一面。
+
+JS 中，Hash 即 Object，Object 即 Hash，这两者是不分的。所以有时也会出现误会。
+
+我印象中，我至少碰过三个项目。它们在判断一个用户是否 admin 时，用到了 config.admins[username] 这样的判断。大家应该理解我的意思吧，也就是：在 config.js 中，保存了一个 admins 值，这里面填写着属于 admin 组用户的用户名。
+
+有一次，在其中的一个项目中，我注册了一个用户，名叫 constructor ，于是我就成了 admin。这是因为，每个对象，都有它的 constructor 属性。而如果 JS 中有 Hash 类型存在的话，这个漏洞就不会发生。当然，后来这些 config.admins[username] 都改成了 config.admins.hasOwnProperty(username) 判断，终止了这个漏洞（不过后来据 @fengmk2 说，还是不保险。但他最近一排时间一直忙结婚，没有给我回复）。
+
+### Array
+
+Array，任何语言都不可缺少的一个组成部分。无论任何形式的编码，所要触碰的数据中，总有同质的数据是可以分为一个共同的小组来管理的。我们会对这些个小组，进行各种循环，各种 map，各种 reduce。这个存放相似数据结构的小组，就是所谓的 Array。
+
+Array 好像没什么好说的，据说 [] 比 new Array() 效率要高，好像是《JavaScript: The Good Parts》说的。
+
+### 数据类型和数据结构
+
+JS 中，记住一句话，可以不吃亏：无论黑数据，白数据，脏数据，干净数据，能被 JSON.stringify 的，就是好数据。
+
+恰好，无论 Number, String, Hash, Array 以何种方式组合，都能被完美地 JSON.stringify。所以在 JS 中，我们很多时候不去创建什么类啊，不去搞什么面向原型编程啊。在需要管理同质化数据时，一个 Array 包裹他们；在需要管理非同质数据的 key-value 结构时，一个 Object 字面量包裹他们。
+
+在 Java 或者 C++ 中，如果想要得到一个可以具有自定义属性的结构，定义一个新的类将是一件愉快的事。但在 JS 中，字面量的 Object 实在太方便了，所以也就不必定义类了。动态语言的灵活经常使得某些旧有的设计模式过时，这不算少见。
+
+有一次一个朋友说，他很喜欢 JS 这样的面向原型编程，一想到 Java 的各种类就很烦。后来我随便答复了两句，感受到，他或许只是想表达他喜欢 JS 中方便的字面量 Object，而不关乎面向原型或是面向对象什么事吧。
+
+相信我，跟 JS 打交道打得越多，你所使用的数据类型和数据结构就会越局限于上述那四种类型。这也不算是坏事，就我的观察来看，他们组合在一起确实很足以表达这个世界了。
+
+### var
+
+var 做了它该做的 70% 的工作，留下了 30% 的坑。但也不算很坑，代码习惯好的人还不定踩得进这坑。
+
+Function
+
+我熟悉 Python Ruby 和 JS，在这三门语言中，我觉得 Function 只在 JS 中是作为 first-class citizen 的。Ruby 由于沿袭了 Smalltalk 的消息传递机制，更是限制了 Function 在其中作为第一公民的便利。Python 嘛，匿名函数用得太差，列表解析只在一定程度上弥补了这个不足，Ruby 的 block 倒是很赞。
+
+### jQuery
+
+jQuery 是 JS 的好伙伴。
+
+每当想起它，我都想到 Ruby 和 Rails 的关系。有个段子是这么说的：Matz 发明了 Ruby，and then DHH rename Ruby to Rails，并把 Rails 发明光大。确实，在 Ruby 的世界中，没有 DHH 的 Rails，就没有今天的 Ruby。
+
+虽然说如果没有 jQuery，JS 照样活得好好的，并且目测不会影响后来 Node 和 V8 这类汹涌澎湃的技术诞生。但看看现在有多少人离开了 jQuery 就不会操作 HTML DOM，就可以看出 jQuery 在 JS 世界中的地位了。
+
+$ 这个符号，我认为，代表了——对于多种常用 DOM 操作的极简抽象，更是用最原始的方式带来了元编程的理念。
+
+何谓元编程，就是用代码来代码。在语言提供的原生组件之上，以更高层面的目光来看待代码。
+
+JS 本身的元编程能力比较差，jQuery 就通过 $ 符号，通过接受不同字符串的方式，对不同的字符串进行解析，来实现元编程的目的。
+
+传入 $ 符号的字符串，无论是
+
+或是 ‘#some-id’ 或是 ‘{}’，都不仅仅只是对 $ 的一种函数调用了。它们只是通过字符串的形式，在玩元编程。
+除了 jQuery，我还真想不起来是否有另外的库也是这么玩元编程的。
+
+### Underscore, Lo-Dash
+
+关于集合的那些操作，弥补了 JS 标准库的残废状态，也大大发扬了 JS 匿名函数的威力
+
+Functions 那部分，更是在特定情况下使 JS 的匿名函数更具威力
+
+Objects 那部分，有些我觉得应该划分到 Utilities 部分去。比如：isArray、isArguments 那类的。纯粹是为了弥补 JS 的残废。
+
+### 异步控制，Async、EventProxy
+
+要不是现在我所在的团队广泛而大量地使用 EventProxy，以及它的作者本身就在我们团队，我可能是不会去接触这些国人发明和维护的库的，这个偏见说来就话长了。
+
+不过就目前来看，我倒是慢慢喜欢上了 EventProxy 的用法。
+
+虽然 Async 和 EventProxy 都可以轻易实现对于各种异步并发以及异步逻辑顺序的控制，但它们确实是两套思维在里面的。
+
+Async 就像一只大手，掌控着局面；EventProxy 是个通讯兵，随叫随到为您服务。Async 插入式地在控制，EventProxy 悠哉地呼叫闭包之外。
+
+用了 Async，代码稍显局促；用 EventProxy 的话，战线可以随意拉长。
+
+还记得 if 和 goto 之争吗？没错，Async 是 if，EventProxy 是 goto。两者虽能实现同样逻辑，但后者需要更深内力。
+
+我想着重说说第三点。
+
+我是个编程世界的后来者，我并没有接触过 goto 遍地的那个年代，自从我接触编程开始，goto 和 label 这两个关键词除了在某些语言的 for 结构中还能见到之外，已经销声匿迹了。
+
+但伴随着是EventProxy 的滥用，goto 又回来了。
+
+什么是 goto？就是在代码任意的一个地方，定义一个 label，在你觉得有必要时，goto 过去。
+
+EventProxy 又怎么用呢？在你需要的地方，定义 something.on(‘hehe’, function)。在你高兴时，something.emit(‘hehe’, data)。代码逻辑乱跳。
+
+它们一样的。
+
+我们很需要谨慎这种对于事件机制的滥用。
+
+### v8
+
+没有 V8 和 Chrome 以及几年前的 JS 引擎大战的话，很多 HTML5 的幻想都只能是个幻想。V8 的速度实在是太快了，快得无法言喻。
+
+光是 V8 的这种快，就足够成为好好学习 JS 的一个理由了。
+
+### Node.js
+
+各领域，各平台，都由于 Node 的出现而有了对于 JS 这门语言的支持。JS 本来就图灵完全并且群众基础广泛，一旦有人发明了 Node 填平了 JS 与各种文件 IO 以及网络 IO 之间的沟壑时，现在 Node 社区如此火爆的热闹场面也就不足为奇了。
+
+Node 的 module.exports 实在巧妙，通过局部 mutable 变量 module 的穿梭，无缝地使 JS 得以模块化。
+
+Node 能够如此方便地实现高并发以及并发取数据这两点，在某些应用场景下是很具优势的。少数的一些 CPU 密集场景，通过 add-on 的方式也很容易转为异步解决。
+
+随着 Node 生态圈的日益成熟，Node 还是很有前途的。现在就已经是很不错的了。
+
+参考资料：https://lee134134134.github.io/page/10/
+
+
+
+
+
