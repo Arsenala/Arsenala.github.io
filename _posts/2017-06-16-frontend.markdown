@@ -1,0 +1,60 @@
+---
+layout:     post
+title:      "每天一个前端知识（22）:js判断"
+subtitle:   "frontend"
+date:       2017-06-16 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### js判断移动端字体尺寸
+
+    (function (root) {
+        var docEl = document.documentElement,
+            timer = null,
+            width, last;
+        function changeRem () {
+            width = docEl.getBoundingClientRect().width;
+            if (last === width) { return; }
+            last = width;
+            root.rem = (width / 640) * 100;
+            if (/ZTE    U930_TD/.test(navigator.userAgent)) {
+            root.rem = root.rem * 1.13;
+            }
+            docEl.style.fontSize = root.rem + 'px';
+        }
+        changeRem();
+        root.addEventListener('resize', function () {
+        clearTimeout(timer);
+        timer = setTimeout(changeRem, 300);
+        });
+            root.addEventListener('orientationchange',  function () {
+            clearTimeout(timer);
+            timer = setTimeout(changeRem, 300);
+        });
+        })(window, undefined);
+
+### js判断微信浏览器
+
+我们知道 js 可以通过 window.navigator.userAgent 来获取浏览器的相关信息，比如：Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36，那么我们也可以通过该方法来获取微信内置浏览器的相关信息：Mozilla/5.0 (iPhone; CPU iPhone OS 7_1_1 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Mobile/11d201 MicroMessenger/5.3。根据关键字 MicroMessenger 来判断是否是微信内置的浏览器。判断函数如下：
+
+    function isWeiXin(){
+        var ua =    window.navigator.userAgent.toLowerCase();
+        if(ua.match(/MicroMessenger/i) ==   'micromessenger'){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+参考资料：https://lee134134134.github.io/page/10/
+
+
+
+
