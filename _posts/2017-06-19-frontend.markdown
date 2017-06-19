@@ -35,7 +35,7 @@ CommonJS 规范是为了解决 JavaScript 的作用域问题而定义的模块�
     
 CommonJS 是同步加载模块，但其实也有浏览器端的实现，其原理是现将所有模块都定义好并通过 id 索引，这样就可以方便的在浏览器环境中解析了，可以参考 require1k 和 tiny-browser-require 的源码来理解其解析（resolve）的过程。
 
-参考资料：
+参考资料：https://lee134134134.github.io/page/9/
 
 
 
