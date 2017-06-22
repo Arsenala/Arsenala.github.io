@@ -1,0 +1,50 @@
+---
+layout:     post
+title:      "每天一个前端知识（28）:Vue+Webpack开发可复用的单页面富应用教程（配置篇）"
+subtitle:   "frontend"
+date:       2017-06-22 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 关于vue+vueRouter+webpack
+
+本项目可以帮你快速搭建一个基于Vue的单页面富应用，目前已将开发环境和生产环境进行单独配置（webpack.dev.config.js和webpack.prod.config.js），当然也可根据需要自行添加灰度配置文件。目前的开发环境文件名使用默认命名（比如1.chunk.js），生产环境使用带hash值的命名（比如1.0891dcfed66cf89e6e98.chunk.js）,可根据自己需要修改,但不建议修改本地环境为带hash的。 入口的html文件由webpack生成，模板在src/template/index.html内,可自行修改。默认已将dist目录、生成的两个index文件加入忽略列表，使用者可根据自己项目来修改。
+
+本项目默认将组件（components）、路由（routers）、自定义过滤器（filters）、自定义指令（directives）等单独拆成目录。在数据获取方面用户可以根据自己需要使用vue-resource或者jQuery等，如果是大型项目，还可以使用vuex来维护状态和数据。当然，这并不意味着本项目是最佳实践，所有的目录结构和webpack配置都可以根据自己需要来修改。
+
+### 准备工作
+
+使用前需要确保你安装了最新版的Node.js和npm。
+
+全局安装webpack和webpack-dev-server
+
+    npm install webpack -g
+    npm install webpack-dev-server -g
+    
+安装成功后，再安装所有依赖
+
+    npm install
+    
+### 运行
+
+首次运行需要执行init命令生成html入口文件，以后不用再执行
+
+    npm run init
+    
+然后执行dev，本地环境就可以跑起来了，默认端口是8080，如果有冲突请先kill
+
+    npm run dev
+    
+在浏览器访问http://127.0.0.1:8080，如果现实下图就说明已经成功了
+
+参考资料：
+
+
+
