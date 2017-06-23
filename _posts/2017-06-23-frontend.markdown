@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "每天一个前端知识（29）:The target="_blank" 安全缺陷 "
+title:      "每天一个前端知识（29）:The target="_blank" 安全缺陷"
 subtitle:   "frontend"
 date:       2017-06-23 00:00:00
 author:     "Tiny"
