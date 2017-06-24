@@ -1,0 +1,69 @@
+---
+layout:     post
+title:      "每天一个前端知识（30）:微信分享iOS手机bug处理"
+subtitle:   "frontend"
+date:       2017-06-24 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+公司网站涉及交易，所有H5移动站用JDK禁止了微信的分享功能
+
+    wx.config({
+        jsApiList: ['hideOptionMenu']
+    });
+    wx.ready(function(){
+        wx.hideOptionMenu();
+    })
+    
+使用了以上的代码后，在微信中，点击右上角后，是不会出现分享功能了。
+
+### bug 描述
+
+公司网站大部分页面采用了路上的代码，是禁止分享的。
+
+但公司的活动宣传需要开启微信的分享功能，活动页面也不调用以上的代码，而是调用
+
+    wx.config({
+                    debug: false, 
+                    appId: d.appId, // 必填，公众号的唯一标识
+                    timestamp: d.timestamp, // 必填，生成签名的时间戳
+                    nonceStr: d.noncestr, // 必填，生成签名的随机串
+                    signature: d.signature,// 必填，签名
+                    jsApiList:  ['onMenuShareTimeline',     'onMenuShareAppMessage',    'onMenuShareQQ',    'onMenuShareWeibo','onMenuShareQZone    ', 'openLocation', 'getLocation',   'scanQRCode'] 
+            });
+    wx.ready(function () {
+                    wx.onMenuShareAppMessage(cfg);
+                    wx.onMenuShareTimeline(cfg);
+                    wx.onMenuShareQQ(cfg);
+                    wx.onMenuShareWeibo(cfg);
+                });
+在安卓中，活动分享一切正常，但在ios中就无法100%正常工作
+
+### bug 100%重现
+
+当活动页页面直接访问时，分享功能正常；
+
+但从首页等页面进入活动页时，分享功能是不正常的。
+
+开发了微信的debug，一起都是正常的。
+
+检查了一圈，bug的产生的原因和首页的微信关闭分享有关！！！这个简直是莫名其妙，又不是同一个页面，也不是spa单页，都改变很多次页面跳转了，wx.hideOptionMenu(); 还在起作用。
+
+### bug修复
+
+只要在活动页面微信配置成功后，调用如下代码就好了
+
+    wx.showOptionMenu();
+    
+参考资料：https://lee134134134.github.io/page/9/
+
+
+
+
