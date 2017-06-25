@@ -102,7 +102,7 @@ stretch
     
 将形成以下的布局：
 
-![](/img/fed/.png)
+![](/img/fed/31-5.png)
 
 参考资料：https://lee134134134.github.io/page/9/
 
