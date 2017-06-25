@@ -19,7 +19,7 @@ tags:
 
 弹性布局中我们将在本教程的这个示例中看到，无论是容器还是项目都是 div。
 
-![31-1](img/31-1.png)
+![](/img/fed/31-1.png)
 
 横向布局
 
@@ -33,7 +33,7 @@ tags:
     
 布局的结果如下：
 
-![31-2](img/31-2.png)
+![](/img/fed/31-2.png)
 
 垂直布局
 
@@ -46,7 +46,7 @@ tags:
         flex-direction: column;
     }
     
-![31-3](img/31-3.png)
+![](/img/fed/31-3.png)
 
 则现在主轴线是垂直的，而交叉轴是水平的，导致项目被垂直堆叠。
 
@@ -60,7 +60,7 @@ tags:
         justify-content: center;
     }
 
-![31-4](img/31-4.png)
+![](/img/fed/31-4.png)
 
 使用 align-items 沿着交叉轴进行调整。
 
@@ -102,7 +102,7 @@ stretch
     
 将形成以下的布局：
 
-![31-5](img/31-5.png)
+![](/img/fed/.png)
 
 参考资料：https://lee134134134.github.io/page/9/
 
