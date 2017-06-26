@@ -1,0 +1,84 @@
+---
+layout:     post
+title:      "每天一个前端知识（33）:知道你现在使用的是哪种模式的JavaScript"
+subtitle:   "frontend"
+date:       2017-06-27 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 在严格模式下,在函数中重复声明arguments会报错:
+
+    'use strict';
+    function say() {
+        var arguments = []; // Uncaught     SyntaxError: Unexpected eval or arguments in strict mode
+    }
+    
+### 在非严格模式下,在函数中重复声明arguments不会报错:
+
+    function sayWithNoStrict() {
+        var arguments = [];
+    }
+    
+### 如果连接两个不同模式的JavaScript文件的话,如果是严格模式的文件放在开始的话,那么整个文件都是处于严格模式的:
+
+    // file1.js
+    'use strict';
+    function say() {
+        var arguments = []; // Uncaught     SyntaxError: Unexpected eval or arguments in strict mode
+    }
+    // file2.js
+    function sayWithNoStrict() {
+        var arguments = []; // Uncaught     SyntaxError: Unexpected eval or arguments in strict mode
+    }
+    
+### 如果连接两个不同模式的JavaScript文件的话,如果是非严格模式的文件放在开始的话,那么整个文件都是处于非严格模式的:
+
+    // file2.js
+    function sayWithNoStrict() {
+        var arguments = [];
+    }
+    // file1.js
+    'use strict';
+    function say() {
+        var arguments = [];
+    }
+    
+因为file1.js和file2.js如果合并到一个文件中的话,那么它们处于同一个作用域中; 这个时候如果在文件的顶部使用use strict的话,那么整个文件都是使用的严格模式; 在文件中间使用use strict是没有作用的。
+
+我们当然也有应对这种情况的解决方案,那就是使用一个立即调用的函数来包裹我们的代码; 达到分离作用域的目的,然后在这个立即执行的函数上方标注我们要使用的模式;如果你想使用严格模式的话, 那就添加use strict;如果不想使用严格模式的话,那就什么也不添加。
+
+    (function() {
+        // file1.js 使用了严格模式
+        'use strict';
+        function say() {
+        }
+    })();
+    (function() {
+        // file2.js 使用非严格模式
+        function sayWithNoStrict() {
+            var arguments = [];
+        }
+    })();
+    
+### 谨记
+
+决定你的应用程序支持JavaScript的那些版本。
+
+确保你使用的任何JavaScript的特性对于应用程序将要运行的所有环境都是支持的。
+
+总是在执行严格模式检查的环境中测试严格代码。
+
+当心连接那些在不同严格模式下有不同预期的脚本。
+
+参考资料：https://lee134134134.github.io/page/9/
+
+
+
+
