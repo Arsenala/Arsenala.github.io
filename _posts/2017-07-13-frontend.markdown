@@ -1,0 +1,41 @@
+---
+layout:     post
+title:      "每天一个前端知识（49）:间接调用eval函数优于直接调用"
+subtitle:   "frontend"
+date:       2017-07-13 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    var str = 'hello';
+    function test() {
+        var str = 'world';
+        return eval('str');
+    }
+    console.log(test()); // world
+    var str1 = 'hello1';
+    function test1() {
+        var str1 = 'world1';
+        //var e = eval;
+        //return e('str1');
+        return (0, eval)('str1'); // 等同于上面注释的部分
+    }
+    console.log(test1()); // hello1
+
+### 谨记
+
+将eval函数同一个无意义的字面量包裹在序列表达式中已达到强制使用间接调用eval函数的目的。
+
+尽可能间接调用eval函数,而不要直接调用eval函数。
+
+参考资料：https://lee134134134.github.io/page/7/
+
+
+
+
