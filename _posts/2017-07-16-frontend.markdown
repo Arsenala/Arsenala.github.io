@@ -1,0 +1,36 @@
+---
+layout:     post
+title:      "每天一个前端知识（52）:使用call方法自定义接受者来调用方法"
+subtitle:   "frontend"
+date:       2017-07-16 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 使用apply
+    function compute() {
+        var sum = 0;
+        for(var i = 0; i < arguments.length; i++) {
+            sum += arguments[i];
+        }
+        return sum;
+    }
+    function wrapper(arr) {
+        return compute.apply(null, arr); // 给compute函数传递多个参数
+    }
+    var arr = [1, 2, 3, 4, 5];
+    console.log(wrapper(arr)); // 15
+
+谨记
+
+使用apply方法指定一个可计算的的参数数组来调用可变参数的函数。
+
+参考资料：https://lee134134134.github.io/page/7/
+
+
