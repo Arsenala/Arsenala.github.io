@@ -1,0 +1,52 @@
+---
+layout:     post
+title:      "每天一个前端知识（53）:使用apply方法通过不同数量的参数调用函数"
+subtitle:   "frontend"
+date:       2017-07-17 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 使用call
+    var obj1 = {
+        sayHello: function(msg) {
+            console.log('Hello,' + this.name + ' ' + msg);
+        },
+        name: 'dreamapple'
+    };
+    var obj2 = {
+        name: 'dream'
+    };
+    // 第一个参数是方法的调用者,剩余的参数就是原函数的参数
+    obj1.sayHello.call(obj2, 'haha'); // Hello,dream haha
+    // 高阶函数使用call
+    function compute(arg) {
+        var sum = 0;
+        for(var i = 0; i < arg.length; i++) {
+            sum += arg[i];
+        }
+        return sum;
+    }
+    function highFunc() {
+        return compute.call(null, arguments);
+    }
+    console.log(highFunc(1, 2, 3, 4, 5)); // 15
+
+### 谨记
+
+使用call方法自定义接受者来调用函数。
+
+使用call方法可以调用在给定的对象中不存在的方法。
+
+使用call方法定义高阶函数允许使用者给回掉函数指定接收者。
+
+参考资料：https://lee134134134.github.io/page/7/
+
+
+
