@@ -1,0 +1,39 @@
+---
+layout:     post
+title:      "每天一个前端知识（57）:使用bind方法提取具有确定接受者的方法"
+subtitle:   "frontend"
+date:       2017-07-21 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    function sayHello(name, words) {
+        console.log('Hello, ' + name + words);
+    }
+    // 将函数与其参数的一个子集绑定的技术称为函数的柯里化
+    function sayHelloToDr(words) {
+        //sayHello('dreamapple', words);
+        // 使用bind
+        sayHello.bind(null, 'dreamapple', words)();
+    }
+    sayHello('dreamapple', ' happy'); // Hello, dreamapple happy
+    sayHello('dreamapple1', ' happy1'); // Hello, dreamapple1 happy1
+    sayHelloToDr(' a nice day'); // Hello, dreamapple a nice day
+    sayHelloToDr(' nice to meet you'); // Hello, dreamapple nice to meet you
+
+### 谨记
+
+使用bind方法实现函数的柯里化,即创建一个固定需求参数子集的委托函数。
+
+传入null或者undefined作为接收者的参数来实现函数的柯里化,从而忽略其接收者。
+
+参考资料：https://lee134134134.github.io/page/6/
+
+
+
