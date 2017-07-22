@@ -1,0 +1,33 @@
+---
+layout:     post
+title:      "每天一个前端知识（58）:使用闭包而不是字符串来封装代码"
+subtitle:   "frontend"
+date:       2017-07-22 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    var a = 1;
+    var code = 'a = 123';
+    function handle() {
+        eval(code);
+    }
+    handle();
+    console.log(a); // 123
+
+### 谨记
+
+当将字符串传递给eval函数以执行它们的API时,绝不要在字符串中包含局部变量引用。
+
+接收函数调用的API优于使用eval函数执行字符串的API。
+
+参考资料：https://lee134134134.github.io/page/6/
+
+ 
+
