@@ -1,0 +1,53 @@
+---
+layout:     post
+title:      "每天一个前端知识（59）:不要信赖函数的对象的toString方法"
+subtitle:   "frontend"
+date:       2017-07-22 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    console.log((function(x) {
+        return x + 1;
+    }).toString());
+    /*
+     * 输出结果
+     * function (x) {
+     *  return x + 1;
+     * }
+     * */
+    console.log((function(x) {
+        return x + 1;
+    }).bind(10).toString());
+    /*
+     * function () { [native code] }
+     * */
+    console.log((function(x) {
+        return function(y) {
+            return x + y;
+        }
+    }).bind(20).toString());
+    /*
+     * function () { [native code] }
+     * */
+
+### 谨记
+
+当调用函数的toString方法时,并没有要求JavaScript引擎能够精确地获取到函数的源代码。
+
+由于在不同的引擎下调用toString方法的结果可能不同,所以绝对不要信赖函数源代码的详细细节。
+
+toString方法的执行结果并不会暴露存储在闭包中的局部变量值。
+
+通常情况下,应该避免使用函数对象的toString方法。
+
+参考资料：https://lee134134134.github.io/page/6/
+
+
+
