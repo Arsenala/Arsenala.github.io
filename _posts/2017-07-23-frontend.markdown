@@ -2,7 +2,7 @@
 layout:     post
 title:      "每天一个前端知识（59）:不要信赖函数的对象的toString方法"
 subtitle:   "frontend"
-date:       2017-07-22 00:00:00
+date:       2017-07-23 00:00:00
 author:     "Tiny"
 header-img: "img/post-bg-frontend.jpg"
 header-mask: 0.3
