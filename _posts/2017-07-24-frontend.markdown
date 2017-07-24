@@ -1,0 +1,54 @@
+---
+layout:     post
+title:      "每天一个前端知识（60）:避免使用非标准的栈检查属性"
+subtitle:   "frontend"
+date:       2017-07-24 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    function func() {
+        //'use strict'; 严格模式下,下面的语句会报错
+        console.log(arguments.callee, arguments.caller);
+    }
+    function sayHi() {
+        func();
+    }
+    sayHi(); // [Function: func] undefined
+    // 简易的栈追踪
+    function traceStack() {
+        var stack = [];
+        for(var f = traceStack.caller; f; f = f.caller) {
+            stack.push(f);
+        }
+        return stack;
+    }
+    function f1() {
+        return traceStack();
+    }
+    function f2() {
+        return f1();
+    }
+    console.log(f2()); // [ [Function: f1], [Function: f2]](chrome浏览器环境下)
+    // 递归的调用将会进入一个死循环
+    function f3(n) {
+        return n === 0 ? traceStack() : f3(n-1);
+    }
+    console.log(f3(1)); // infinite loop 死循环
+
+### 谨记
+
+避免使用非标准的arguments.caller和arguments.callee属性,因为它们不具备良好的一移植性。
+
+避免使用非标准的函数对象call属性,因为在包含全部栈信息方面,它是不可靠的。
+
+参考资料：https://lee134134134.github.io/page/6/
+
+
+
