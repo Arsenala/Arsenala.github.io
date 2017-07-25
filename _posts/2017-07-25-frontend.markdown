@@ -1,0 +1,44 @@
+---
+layout:     post
+title:      "每天一个前端知识（61）:理解prototype,getPrototypeOf和__proto__之间的不同）"
+subtitle:   "frontend"
+date:       2017-07-25 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 创建一个类
+    function Student(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    // 创建原型
+    Student.prototype.info = function() {
+        console.log('My name is ' + this.name + ' and my age is ' + this.age);
+    };
+    // C.prototype == new C().__proto_   C.prototype == Object.getPrototypeOf(new C())
+    var s = new Student('dreamapple', 22);
+    s.info(); // My name is dreamapple and my age is 22
+    console.log(Student.prototype === s.__proto__); // true
+    console.log(Student.prototype === Object.getPrototypeOf(s)); // true
+
+### 谨记
+
+C.prototype属性是new C()`创建的对象的原型。
+
+Object.getPrototypeOf(obj)是ES5中检索对象原型的标准函数。
+
+obj.proto是检索对象原型的非标准方法。
+
+类是由一个构造函数和一个关联的原型组成的一种设计模式。
+
+参考资料：https://lee134134134.github.io/page/6/
+
+
+
