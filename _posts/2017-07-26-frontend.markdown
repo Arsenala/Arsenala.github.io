@@ -1,0 +1,39 @@
+---
+layout:     post
+title:      "每天一个前端知识（62）:使用Object.getPropertyOf函数而不要使用__proto__属性）"
+subtitle:   "frontend"
+date:       2017-07-26 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    var obj = Object.create(null);
+    console.log('__proto__' in obj); // false
+    console.log(Object.getPrototypeOf(obj)); // null
+    // 可以使用 __proto__属性来模仿 Object.getPropertyOf() 函数
+    if('undefined' === typeof Object.getPrototypeOf) {
+        Object.getPrototypeOf = function(obj) {
+            var t = typeof obj;
+            if(!obj || (t !== 'object' && t !== 'function')) {
+                throw new Error('not an object');
+            }
+            return obj.__proto__;
+        }
+    }
+    
+### 谨记
+
+使用符合标准的Object.getPrototypeOf函数而不要使用非标准的proto属性。
+
+在支持proto属性的非ES5环境中实现Object.getPrototypeOf函数。
+
+参考资料：https://lee134134134.github.io/page/6/
+
+
+
