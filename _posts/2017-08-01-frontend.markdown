@@ -1,0 +1,53 @@
+---
+layout:     post
+title:      "每天一个前端知识（68）:认识到this变量的隐式绑定问题"
+subtitle:   "frontend"
+date:       2017-08-01 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    function CSVReader(separators) {
+        this.separators = separators || [','];
+        this.regexp = new RegExp(this.separators.map(function(separator) {
+            return '\\' + separator[0];
+        }).join('|'));
+    }
+    CSVReader.prototype.read = function(str) {
+        var lines = str.trim().split(/\n/);
+        // @1 使用map函数的第二个参数绑定this
+        //return lines.map(function(line) {
+        //    console.log(this); //
+        //    return line.split(this.regexp);
+        //}, this); // 如果这里不绑定this的话,上面的this.regexp中的this指的就是window
+        // @2 使用变量绑定this
+        //var that = this;
+        //return lines.map(function(line) {
+        //    return line.split(that.regexp);
+        //});
+        // @3
+        return lines.map(function(line) {
+            return line.split(this.regexp);
+        }.bind(this));
+    };
+    var reader = new CSVReader();
+    console.log(reader.regexp); // /\,/
+    console.log(reader.read('a,b,c\nd,e,f\n')); // [ [ 'a', 'b', 'c' ], [ 'd', 'e', 'f' ] ]
+
+### 谨记
+
+this变量的作用域总是由其最近的封闭函数所确定。
+
+使用一个局部变量(通常命名为self,me或that),使得this绑定对于内部函数是可用的。
+
+参考资料：https://lee134134134.github.io/page/5/
+
+
+
+
