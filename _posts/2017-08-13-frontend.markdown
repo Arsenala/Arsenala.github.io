@@ -1,0 +1,44 @@
+---
+layout:     post
+title:      "每天一个前端知识（80）:数组迭代要优先使用for循环而不是for...in循环"
+subtitle:   "frontend"
+date:       2017-08-13 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    var scores = [1, 2, 3, 4, 5];
+    var total = 0,
+        aver = 0;
+    for(var score in scores) {
+        total += score;
+    }
+    console.log(total); // 001234
+    aver = total / scores.length;
+    console.log(aver); // 246.8
+    total = 0;
+    aver = 0;
+    // 实际上,我们应该使用for循环不会那么容易出错
+    var len = scores.length;
+    for(var i = 0; i < len; i++) {
+        total += scores[i];
+    }
+    aver = total / scores.length;
+    console.log(aver); // 3
+
+### 谨记
+
+迭代数组的索引属性应当总是使用for循环而不是for..in循环。
+
+考虑在循环之前将数组的长度存储在一个局部变量中以避免重新计算数组长度。
+
+参考资料：https://lee134134134.github.io/page/4/
+
+
+
