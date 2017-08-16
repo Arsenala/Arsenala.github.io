@@ -1,0 +1,36 @@
+---
+layout:     post
+title:      "每天一个前端知识（83）:数组字面量优于数组构造函数"
+subtitle:   "frontend"
+date:       2017-08-16 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    var a1 = new Array(8);
+    console.log(a1, a1.length); // [ , , , , , , ,  ] 8
+    var a2 = [8];
+    console.log(a2, a2.length); // [ 8 ] 1
+    function fn(Array) {
+        return new Array(1, 2, 3);
+    }
+    var a3 = fn(String);
+    console.log(a3); // [String: '1']
+
+### 谨记
+
+如果数组构造函数的第一个参数是数字则数组的构造函数行为是不同的。
+
+使用数组字面量替代数组构造函数。
+
+参考资料：https://lee134134134.github.io/page/4/
+
+
+
+

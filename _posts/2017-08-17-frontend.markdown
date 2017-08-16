@@ -1,0 +1,37 @@
+---
+layout:     post
+title:      "每天一个前端知识（84）:保持一致的约定"
+subtitle:   "frontend"
+date:       2017-08-17 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 函数名尽量能够表达我们的意思
+    // 参数的顺序,名字符合习惯的约定
+    function Rectangle(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+    var rect = new Rectangle(10, 20);
+    console.log(rect); // Rectangle { width: 10, height: 20 }
+
+### 谨记
+
+在变量名和函数签名中使用一直的约定。
+
+不要偏离用户在他们的开发平台中很可能遇到的约定。
+
+参考资料：https://lee134134134.github.io/page/4/
+
+
+
+
+
+
