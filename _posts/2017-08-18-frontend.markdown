@@ -1,0 +1,40 @@
+---
+layout:     post
+title:      "每天一个前端知识（85）:将undefined看做没有值"
+subtitle:   "frontend"
+date:       2017-08-18 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 我们应该判断参数是否是undefined来决定是否使用默认值
+    function Element(width, height) {
+        this.width = width === undefined ? 100 : width;
+        this.height = height === undefined ? 100 : height;
+    }
+    var ele = new Element();
+    console.log(ele); // Element { width: 100, height: 100 }
+    var ele1 = new Element(20);
+    console.log(ele1); // Element { width: 20, height: 100 }
+    var ele2 = new Element(20, 30);
+    console.log(ele2); // Element { width: 20, height: 30 }
+
+### 谨记
+
+避免使用undefined表示任何非特定值。
+
+使用描述性的字符串值或命名布尔属性的对象,而不要使用undefined或null来表示特定应用标志。
+
+提供参数默认值应当采用测试undefined的方式,而不是检查arguments.length。
+
+在允许0,NaN或空字符串为有效参数的地方,绝不要通过真值测试来实现参数默认值。
+
+参考资料：https://lee134134134.github.io/page/3/
+
+
