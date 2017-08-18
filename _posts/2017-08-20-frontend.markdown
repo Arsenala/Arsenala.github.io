@@ -1,0 +1,52 @@
+---
+layout:     post
+title:      "每天一个前端知识（87）:  避免不必要的状态"
+subtitle:   "frontend"
+date:       2017-08-20 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 无状态的API
+    console.log('hello'.toUpperCase()); // HELLO
+    // 定义一个类名 和一个有状态的方法
+    function User(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    User.prototype.setAge = function(age) {
+        this.age = age;
+    };
+    // 无状态的方法,取决于给对象的age
+    User.prototype.sayHello = function() {
+        if(this.age > 60) {
+            console.log('I am old.');
+        }
+        else {
+            console.log('I am young.');
+        }
+    };
+    var u1 = new User('dream', 20);
+    u1.sayHello(); // I am young.
+    u1.setAge(80);
+    u1.sayHello(); // I am old.
+    
+### 谨记
+
+尽可能使用无状态的API。
+
+所有通过选项对象提供的参数应当被视为可选的。
+
+使用extend函数抽象出从选项对象中提取值的逻辑。
+
+参考资料：https://lee134134134.github.io/page/3/
+
+
+
+
