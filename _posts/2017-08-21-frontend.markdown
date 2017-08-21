@@ -1,0 +1,49 @@
+---
+layout:     post
+title:      "每天一个前端知识（88）:使用结构类型设计灵活的接口"
+subtitle:   "frontend"
+date:       2017-08-21 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    function Rectangle(width, length) {
+        this.width = width;
+        this.length = length;
+    }
+    Rectangle.prototype.getArea = function() {
+        return this.width * this.length;
+    };
+    // 我们可以使用结构类型
+    function rectangle1(width, length) {
+        var _width = width,
+            _length = length;
+        return {
+            getArea: function() {
+                return _width * _length;
+            }
+        }
+    }
+    var r1 = new Rectangle(100, 200);
+    console.log(r1.getArea()); // 20000
+    var r2 = rectangle1(100, 200);
+    console.log(r2.getArea()); // 20000
+
+### 谨记
+
+使用结构类型(也称为鸭子类型)来设计灵活的对象接口。
+
+结构接口更灵活,更轻量,所以应该避免使用继承。
+
+针对单元测试,使用mock对象即接口的替代实现来提供可复验的行为。
+
+参考资料：https://lee134134134.github.io/page/3/
+
+
+
