@@ -1,0 +1,27 @@
+---
+layout:     post
+title:      "每天一个前端知识（93）:在异步序列中使用嵌套或命名的回调函数"
+subtitle:   "frontend"
+date:       2017-08-26 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 谨记
+
+使用嵌套或命名的回调函数按顺序地执行多个异步操作。
+
+尝试在过多的嵌套的回调函数和尴尬的命名的非嵌套回调函数之间取得平衡。
+
+避免将可被并行执行的操作顺序化。
+
+参考资料：https://lee134134134.github.io/page/3/
+
+
+

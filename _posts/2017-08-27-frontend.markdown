@@ -1,0 +1,43 @@
+---
+layout:     post
+title:      "每天一个前端知识（94）:当心丢弃错误"
+subtitle:   "frontend"
+date:       2017-08-27 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    try {
+        (function(){
+            setTimeout(function() {
+                console.log(a + b);
+            }, 3000)
+        })();
+        (function(){
+            setTimeout(function() {
+                console.log(c + b);
+            }, 3000)
+        })();
+    } catch(e) {
+        console.log(e); // 在chrome浏览器中可以捕获到错误
+    }
+
+### 谨记
+
+通过编写共享的错误处理函数来避免复制和粘贴错误处理代码。
+
+确保明确地处理所有的错误条件以避免丢弃错误。
+
+参考资料：https://lee134134134.github.io/page/3/
+
+
+
+
+
+
