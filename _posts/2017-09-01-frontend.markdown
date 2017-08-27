@@ -1,0 +1,39 @@
+---
+layout:     post
+title:      "每天一个前端知识（99）: 使用promise模式清洁异步逻辑"
+subtitle:   "frontend"
+date:       2017-09-01 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+    // 使用ES6的 Promise
+        let p = new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve('hello')
+                    }, 2000);
+                })
+        p.then((res) => {
+            console.log(res);
+        })
+        
+### 谨记
+
+promise代表最终值,即并行操作完成时最终产生的结果。
+
+使用promise组合不同的并行操作。
+
+使用promise模式的API避免数据竞争。
+
+在要求有意的竞争条件时使用select(也称为choose)
+
+参考资料：https://lee134134134.github.io/page/2/
+
+
+

@@ -1,0 +1,27 @@
+---
+layout:     post
+title:      "每天一个前端知识（96）:不要在计算时阻塞事件队列"
+subtitle:   "frontend"
+date:       2017-08-29 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 谨记
+
+避免在主事件队列中执行代价高昂的算法。
+
+在支持Worker API的平台,该API可以用来在一个独立的事件队列中运行长计算程序。
+
+在Worker API不可用或代价昂贵的环境中,考虑将计算程序分解到事件循环的多个轮次中。
+
+参考资料：https://lee134134134.github.io/page/2/
+
+
+

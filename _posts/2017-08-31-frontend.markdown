@@ -1,0 +1,30 @@
+---
+layout:     post
+title:      "每天一个前端知识（98）:绝不要同步地调用异步的回调函数"
+subtitle:   "frontend"
+date:       2017-08-31 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 谨记
+
+即使可以立即得到数据,也不要同地调用异步回调函数。
+
+同步地调用异步的回调函数扰乱了预期的操作序列,并可能导致意想不到的交错代码。
+
+同步地调用异步的回调函数可能会导致栈溢出或错误地处理异常。
+
+使用异步的API,比如setTimeout函数来调度异步回掉函数,使其运行于另一个回合。
+
+参考资料：https://lee134134134.github.io/page/2/
+
+
+
+

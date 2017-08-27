@@ -1,0 +1,26 @@
+---
+layout:     post
+title:      "每天一个前端知识（97）:使用计数器来执行并行操作"
+subtitle:   "frontend"
+date:       2017-08-30 00:00:00
+author:     "Tiny"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - 前端开发
+    - 开发规范
+    - 前端教程
+---
+
+### 谨记
+
+JavaScript应用程序中的事件发生是不确定的,即顺序是不可预测的。
+
+使用计数器避免并行操作中的数据竞争。
+
+参考资料：https://lee134134134.github.io/page/2/
+
+
+
+
