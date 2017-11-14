@@ -149,6 +149,10 @@ iconmonstr设计风格
 
 [http://iconmelon.com](http://iconmelon.com)
 
+flaticon矢量图标
+
+[https://www.flaticon.com](https://www.flaticon.com)
+
 ### 矢量图/笔刷/材质
 
 Freepik百万级矢量素材库
