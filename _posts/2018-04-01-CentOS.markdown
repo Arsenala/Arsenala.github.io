@@ -2,7 +2,7 @@
 layout:     post
 title:      "Linux下手动搭建PHP+MySql+Nginx"
 subtitle:   "CentOS"
-date:       2018-03-25 00:00:00
+date:       2018-04-01 00:00:00
 author:     "xiaochao"
 header-img: "img/post-bg-frontend.jpg"
 header-mask: 0.3
