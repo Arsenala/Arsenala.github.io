@@ -124,9 +124,9 @@ PHP7-FPM 配置完成。
     mkdir -p /var/lib/php/session
     chown nginx:nginx -R /var/lib/php/session
 
-### 步骤3-安装和配置MariaDB
+### 步骤3-安装和配置MariaDB（二选一）
 
-**安装MariaDB**
+安装MariaDB
 
 可以直接使用 yum 命令从 CentOS 默认远程仓库中安装
 
@@ -159,7 +159,7 @@ PHP7-FPM 配置完成。
     
 自此，我们的linux下安装php+mysql+nginx算是完成了
 
-**安装和配置MySql**
+### 步骤4-安装和配置MySql（二选一）
 
 注意：已经安装了上面了的mariadb的，可以不安装这个了，这两个数据库的用法差不多的。
  
