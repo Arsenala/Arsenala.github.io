@@ -1,0 +1,203 @@
+---
+layout:     post
+title:      "Linux下手动搭建PHP+MySql+Nginx"
+subtitle:   "frontend"
+date:       2018-03-25 00:00:00
+author:     "xiaochao"
+header-img: "img/post-bg-frontend.jpg"
+header-mask: 0.3
+catalog:    true
+tags:
+    - Linux
+    - CentOS
+    - 服务器开发
+---
+
+### 步骤1-在CentOS7中安装Nginx和PHP7-FPM
+
+显在开始安装Nginx和PHP-FPM之前，我们要先添加EPEL包的仓库源。使用如下命令：
+
+    yum -y install epel-release
+
+安装完EPEL源之后，我们就可以通过仓库源安装Nginx了，命令如下：
+
+    yum -y install nginx
+    
+执行完上面的命令之后，我们执行
+
+    nginx-v
+
+终端返回
+
+    nginx version：nginx/1.10.2
+
+接下来，我们启动nginx，并且把他设置为开机自启动
+
+    systemctl start nginx
+    systemctl enable nginx
+
+然后通过浏览器访问我们服务器的公网地址，出现如下界面说明nginx安装和启动成功了。
+
+然后我们还需要为 php7-fpm 添加另外一个仓库。互联网中有很个远程仓库提供了PHP7系列包，我在这里使用的是webtatic。
+
+添加PHP7-FPM webtatic仓库：
+
+    rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+    
+然后就是安装PHP7-FPM以及些包。
+
+    yum -y install php71w-fpm php71w-cli php71w-gd php71w-mcrypt php71w-mysql php71w-pdo php71w-xml php71w-pear php71w-mbstring php71w-mbstring php71w-json php71w-pecl-apcu php71w-pecl-apcu-devel
+    
+最后，从服务器终端里查看 PHP 的版本号，以便验证 PHP 是否正确安装。
+
+    php -v
+    
+终端返回
+    
+    PHP 7.1.14 (cli) (built: Feb  4 2018 09:05:29) ( NTS )
+    Copyright (c) 1997-2018 The PHP Group
+    Zend Engine v3.1.0, Copyright (c) 1998-2018 Zend    Technologies
+    
+### 步骤2-配置PHP7-FPM           
+
+在这一个步骤中，我们将配置php-fpm与Nginx协同运行。Php7-fpm将使用 nginx用户来运行，并监听9000端口。
+
+使用vim编辑默认的php-7-fpm配置文件。
+
+    vim /etc/php-fpm.d/www.conf   
+
+在第8行和第10行，user和group赋值为nginx。
+    
+    user = nginx
+    group = nginx
+
+在第22行，确保 php-fpm 运行在指定端口。
+
+    listen = 127.0.0.1:9000
+    
+取消第 366-370 行的注释，启用 php-fpm 的系统环境变量。
+
+    env[HOSTNAME] = $HOSTNAME
+    env[PATH] = /usr/local/bin:/usr/bin:/bin
+    env[TMP] = /tmp
+    env[TMPDIR] = /tmp
+    env[TEMP] = /tmp
+
+保存文件并退出 vim 编辑器。
+
+接下来我们编辑nginx.conf的配置文件，让nginx能够解析php文件
+
+    vim /etc/nginx/nginx.conf
+    
+然后在nginx.conf里面插入如下代码,记住格式必须要一致，空格之类的不能多也不能少，不然等下重启nginx的时候会报错。
+
+      location ~ \.php$ {
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+然后启动 php-fpm 和 Nginx，并且将php-fpm设置为随开机启动的服务。
+
+    service nginx restart
+    systemctl start php-fpm
+    systemctl enable php-fpm
+
+PHP7-FPM 配置完成。
+
+然后在我们nginx目录下创建phpinfo.php文件（博主的目录为/usr/share/nginx/html）
+
+    vi /usr/share/nginx/html/phpinfo.php
+    
+接在在里面填写如下信息
+
+    <?php
+    phpinfo();
+    
+然后访问公网IP/phpinfo.php
+
+接下来，还要一步要做，那就是设置下session有关的东西。如果我们不把session拥有者设置为nginx，session不在同一个页面的话就会出现问题(博主亲身的辛酸经历啊)。我们需要再/var/lib/目录下，创建文件夹，文件夹名字为session，进行如下命令：
+
+    mkdir -p /var/lib/php/session
+    chown nginx:nginx -R /var/lib/php/session
+
+### 步骤3-安装和配置MariaDB
+
+安装MariaDB
+
+可以直接使用 yum 命令从 CentOS 默认远程仓库中安装
+
+    yum -y install mariadb mariadb-server
+ 
+启动 MariaDB，并将其添加到随系统启动的服务中去
+
+    systemctl start mariadb
+    systemctl enable mariadb
+ 
+现在开始配置 MariaDB 的 root 用户密码
+
+    mysql_secure_installation
+
+输入完之后，会要求输出现在的密码，默认安装完之后密码为空，直接回车
+ 
+键入 Y ，然后设置 MariaDB 的 root 密码
+
+    Set root password? [Y/n] Y
+    New password:
+    Re-enter new password:
+    Remove anonymous users? [Y/n] Y
+    Disallow root login remotely? [Y/n] Y
+    Remove test database and access to it? [Y/n] Y
+    Reload privilege tables now? [Y/n] Y
+ 
+这样就设置好了密码，然后尝试登陆下
+
+    mysql -uroot -p
+    
+自此，我们的linux下安装php+mysql+nginx算是完成了
+
+###安装和配置MySql
+
+注意：已经安装了上面了的mariadb的，可以不安装这个了，这两个数据库的用法差不多的。
+ 
+首先Centos7已经不支持mysql，因为收费了你懂得。centos下yum暂时没有mysql-server直接安装包；MariaDB是MySQL社区开发的分支，也是一个增强型的替代品。CentOS7的yum源中默认好像是没有mysql的。为了解决这个问题，我们要先下载mysql的repo源。
+ 
+下载mysql的repo源
+
+    wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+ 
+安装mysql-community-release-el7-5.noarch.rpm包
+
+    rpm -ivh mysql-community-release-el7-5.noarch.rpm
+    
+安装这个包后，会获得两个mysql的yum repo源：
+
+    /etc/yum.repos.d/mysql-community.repo，/etc/yum.repos.d/mysql-community-source.repo
+ 
+安装mysql
+
+    yum install mysql-server
+    
+根据步骤安装就可以了，不过安装完成后，没有密码，需要重置密码。
+ 
+重置密码之前，首先要执行以下操作:
+
+    chown -R root:root /var/lib/mysql
+    
+备注： root是你当前登陆名，如果是其他名字。请自行更换
+ 
+然后重启服务器
+
+    service mysqld restart
+ 
+接下来登录重置密码：
+
+    mysql -uroot
+    mysql >use mysql;
+    mysql >update user set password=passworD("123456") where user='root';
+    mysql> flush privileges;
+    mysql> exit;
+
+
+
