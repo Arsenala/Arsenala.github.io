@@ -4,7 +4,7 @@ title:      "Linux下手动搭建PHP+MySql+Nginx"
 subtitle:   "CentOS"
 date:       2018-04-01 00:00:00
 author:     "xiaochao"
-header-img: "img/post-bg-frontend.jpg"
+header-img: "img/post-bg-centos.jpg"
 header-mask: 0.3
 catalog:    true
 tags:
@@ -37,6 +37,8 @@ tags:
     systemctl enable nginx
 
 然后通过浏览器访问我们服务器的公网地址，出现如下界面说明nginx安装和启动成功了。
+
+![](/img/CentOS/CentOS_1.jpg)
 
 然后我们还需要为 php7-fpm 添加另外一个仓库。互联网中有很个远程仓库提供了PHP7系列包，我在这里使用的是webtatic。
 
@@ -124,7 +126,7 @@ PHP7-FPM 配置完成。
 
 ### 步骤3-安装和配置MariaDB
 
-安装MariaDB
+**安装MariaDB**
 
 可以直接使用 yum 命令从 CentOS 默认远程仓库中安装
 
@@ -157,7 +159,7 @@ PHP7-FPM 配置完成。
     
 自此，我们的linux下安装php+mysql+nginx算是完成了
 
-###安装和配置MySql
+**安装和配置MySql**
 
 注意：已经安装了上面了的mariadb的，可以不安装这个了，这两个数据库的用法差不多的。
  
