@@ -4,7 +4,7 @@ title:      "搭建 Git 服务器"
 subtitle:   "git"
 date:       2018-06-22 00:00:00
 author:     "xiaochao"
-header-img: "post-bg-git.jpg"
+header-img: "img/post-bg-git.jpg"
 header-mask: 0.3
 catalog:    true
 tags:
