@@ -152,7 +152,9 @@ group：可选项，可以运行Nginx服务器的用户组
 
 ### worker process数配置
 
-Nginx服务器实现并发处理服务的关键，指令格式：worker_processes number | auto;
+Nginx服务器实现并发处理服务的关键，指令格式：
+
+    worker_processes number | auto;
 
 number：Nginx进程最多可以产生的worker process数
 
@@ -178,7 +180,9 @@ file：指定存放路径和文件名称
 
 ### 错误日志的存放路径
 
-指定格式：error_log file | stderr;
+指定格式：
+
+    error_log file | stderr;
 
 file：日志输出到某个文件file
 
@@ -192,7 +196,9 @@ stderr：日志输出到标准错误输出
 
 ### 设置网络连接的序列化
 
-指令格式：accept_mutex on | off;
+指令格式：
+
+    accept_mutex on | off;
 
 该指令默认为on状态，表示会对多个Nginx进程接收连接进行序列化，防止多个进程对连接的争抢。
 
@@ -204,7 +210,9 @@ stderr：日志输出到标准错误输出
 
 ### 是否允许同时接收多个网络连接
 
-指令格式：multi_accept on | off;
+指令格式：
+
+    multi_accept on | off;
 
 该指令默认为off状态，意指每个worker process 一次只能接收一个新到达的网络连接。若想让每个Nginx的worker process都有能力同时接收多个网络连接，则需要开启此配置
 
@@ -302,7 +310,9 @@ name可以有多个并列名称，而且此处的name支持正则表达式书写
 
 ### location配置
 
-指令格式为：location [ = | ~ | ~* | ^~ ] uri {...}
+指令格式为：
+
+    location [ = | ~ | ~* | ^~ ] uri {...}
 
 这里的uri分为标准uri和正则uri，两者的唯一区别是uri中是否包含正则表达式
 
