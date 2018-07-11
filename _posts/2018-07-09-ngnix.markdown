@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "从一份配置清单详解 Nginx 服务器配置"
+title:      "环境搭建——从一份配置清单详解 Nginx 服务器配置"
 subtitle:   "Ngnix"
 date:       2018-07-09 00:00:00
 author:     "hansonwang"
@@ -9,8 +9,8 @@ header-mask: 0.3
 catalog:    true
 tags:
     - Linux
-    - CentOS
-    - Nignx
+    - Nginx
+    - SetUp
 ---
 
 ### 概述

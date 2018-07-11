@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Linux下手动搭建PHP+MySql+Nginx"
+title:      "环境搭建——Linux下手动搭建PHP+MySql+Nginx"
 subtitle:   "CentOS"
 date:       2018-04-01 00:00:00
 author:     "xiaochao"
@@ -10,7 +10,7 @@ catalog:    true
 tags:
     - Linux
     - CentOS
-    - 服务器开发
+    - SetUp
 ---
 
 ### 步骤1-在CentOS7中安装Nginx和PHP7-FPM

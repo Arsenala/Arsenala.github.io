@@ -9,8 +9,8 @@ header-mask: 0.3
 catalog:    true
 tags:
     - Design
-    - 原型设计
-    - 效果图
+    - Prototype
+    - Show
 ---
 
 ![](/img/Design/lianlian.png)
