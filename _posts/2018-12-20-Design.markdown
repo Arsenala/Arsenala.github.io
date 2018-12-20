@@ -13,19 +13,19 @@ tags:
     - Show
 ---
 
-![](/img/Design/index1.png)
+![](/img/Design/index1.jpg)
 
-![](/img/Design/index2.png)
+![](/img/Design/index2.jpg)
 
-![](/img/Design/index3.png)
+![](/img/Design/index3.jpg)
 
-![](/img/Design/index4.png)
+![](/img/Design/index4.jpg)
 
-![](/img/Design/index5.png)
+![](/img/Design/index5.jpg)
 
-![](/img/Design/index6.png)
+![](/img/Design/index6.jpg)
 
-![](/img/Design/index7.png)
+![](/img/Design/index7.jpg)
 
 
 
