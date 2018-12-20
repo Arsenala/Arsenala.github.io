@@ -12,11 +12,11 @@ baseurl: ""                             # for example, '/blog' if your blog host
 
 # SNS settings
 RSS: false
-weibo_username:     Arsenala_
-zhihu_username:     Arsenal
-github_username:    xijingnan
+weibo_username:     ASOASM
+zhihu_username:     ASOASM
+github_username:    ASOASM
 #twitter_username:  Arsenala
-facebook_username:  Arsen Ala
+facebook_username:  81hao
 # linkedin_username:  firstname-lastname-idxxxx
 
 
@@ -90,8 +90,8 @@ service-worker: true
 # Friends
 friends: [
     {
-        title: "席景楠",
-        href: "http://xijingnan.com"
+        title: "ASOASM",
+        href: "https://asoasm.com"
     },{
         title: "ASO黑科技",
         href: "http://www.asoheikeji.com"
