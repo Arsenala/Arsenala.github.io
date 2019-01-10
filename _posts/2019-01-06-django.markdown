@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "Linux 下部署 Django 环境"
-subtitle:   "frontend"
+title:      "环境搭建——Linux 下部署 Django 环境"
+subtitle:   "Django"
 date:       2019-01-06 00:00:00
 author:     "xiaochao"
 header-img: "img/post-bg-django.jpg"
@@ -238,7 +238,7 @@ tags:
     chown-socket = nginx:nginx
     vacuum = true
 
-**配置 Nginx**
+### 配置 Nginx
 
 配置完成 Uwsgi 后，我们来创建 Nginx 的配置文件(/etc/nginx/conf.d/my.conf)
 
@@ -267,7 +267,7 @@ tags:
     
     systemctl restart nginx.service
 
-**配置 Supervisord**
+### 配置 Supervisord
 
 
 接下来，我们来配置 Supervisord ，确保我们的 django 可以持久运行
