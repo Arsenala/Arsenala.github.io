@@ -14,11 +14,14 @@ tags:
 贾旭超
   
 地址：北京市朝阳区
+
 个人地址：[https://jiaxuchao.com](https://jiaxuchao.com)
+
 作品地址：[https://asoasm.com](https://asoasm.com)
+
 E-mail: jiaxuchao@asoasm.com
 
-###求职意向
+### 求职意向
 
 工作性质：全职
 工作地区：北京
@@ -26,7 +29,7 @@ E-mail: jiaxuchao@asoasm.com
 期望月薪：10K/月
 目前状况：我目前在职，正在考虑换个环境（如有合适的工作机会，到岗时间一个星期）
 
-###专业技能
+### 专业技能
 
 掌握iOS，Android等移动界面设计规范，能使用Axure Sketch设计交互原型图及效果图的实现
 
@@ -34,11 +37,14 @@ E-mail: jiaxuchao@asoasm.com
 
 熟悉使用Photoshop，Illustrator，等设计软件及Word，Excel，Keynote等办公软件 
 
-###工作经历2015/08——至今
+### 工作经历2015/08——至今
 
-北京阳光伟烨网络技术有限公司|ASO产品经理/UI设计
+北京阳光伟烨网络技术有限公司
+
+职位：ASO产品经理/UI设计
 
 在职期间负责公司
+
 负责公司产品在海外App Store市场上和Google Play市场的ASO工作
 
 时刻关注市场的排名算法变化，分析运营及渠道数据，指定相应ASO策略进行优化调整
